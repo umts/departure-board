@@ -1,3 +1,5 @@
+import DepartureBoard from './components/DepartureBoard.jsx'
+
 export default function App () {
-  return (<h1>Hello, World!</h1>)
+  return (<DepartureBoard />)
 }
