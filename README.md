@@ -1,12 +1,51 @@
-# React + Vite
+# Departure Board
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+TODO: Describe.
 
-Currently, two official plugins are available:
+## Usage
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+TODO: Describe.
 
-## Expanding the ESLint configuration
+## Development
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+This application uses [`react`][react] as a framework and is bundled using [`vite`][vite]
+through [`node.js`][nodejs] + [`npm`][npm]. It is recommended that you use
+[`nodenv`][nodenv] to manage local node installations.
+
+It is entirely clientside and data is fetched remotely from GTFS feeds.
+
+### Requirements
+
+- `node.js`/`npm` matching the version in the `.node-version` file (just run `nodenv install` if using nodenv)
+
+### Setup
+
+```sh
+npm install # bundle dependencies
+```
+
+### Scripts
+
+```sh
+npm run build    # builds a production bundle.
+npm run dev      # starts a local development server.
+npm run lint     # runs the js linter.
+npm run lint:css # runs the css linter.
+npm run preview  # serves a previously built production bundle.
+```
+
+## Contributing
+
+Bug reports and pull requests are welcome on [GitHub][github].
+
+## License
+
+The application is available as open source under the terms of the [MIT License](license).
+
+[github]: https://github.com/umts/departure-board
+[license]: https://opensource.org/licenses/MIT
+[nodejs]: https://nodejs.org
+[nodenv]: https://github.com/nodenv/nodenv
+[npm]: https://www.npmjs.com
+[react]: https://react.dev
+[vite]: https://vitejs.dev
