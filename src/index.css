@@ -10,5 +10,8 @@
 }
 
 body {
+  background-color: #212529;
+  color: #dee2e6;
   margin: 0;
+  overflow: hidden;
 }
