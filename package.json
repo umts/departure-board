@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/open-sans": "*",
     "@vitejs/plugin-react": "*",
     "react": "*",
     "react-dom": "*",
