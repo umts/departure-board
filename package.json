@@ -1,0 +1,33 @@
+{
+  "name": "departure-board",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "lint": "eslint",
+    "lint:css": "stylelint **/*.css **/*.module.css",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fontsource/open-sans": "*",
+    "@vitejs/plugin-react": "*",
+    "react": "*",
+    "react-dom": "*",
+    "vite": "*"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "*",
+    "eslint": "*",
+    "eslint-plugin-react-hooks": "*",
+    "eslint-plugin-react-refresh": "*",
+    "neostandard": "*",
+    "playwright": "*",
+    "stylelint": "*",
+    "stylelint-config-standard": "*",
+    "vitest": "*",
+    "vitest-browser-react": "*"
+  }
+}
