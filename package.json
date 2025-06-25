@@ -7,6 +7,7 @@
     "build": "vite build",
     "dev": "vite",
     "lint": "eslint",
+    "lint:css": "stylelint **/*.css **/*.module.css",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -19,6 +20,8 @@
     "eslint": "*",
     "eslint-plugin-react-hooks": "*",
     "eslint-plugin-react-refresh": "*",
-    "neostandard": "*"
+    "neostandard": "*",
+    "stylelint": "*",
+    "stylelint-config-standard": "*"
   }
 }
