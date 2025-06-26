@@ -1,6 +1,5 @@
 .departure-container {
   border-radius: 0.5rem;
-
   display: grid;
   grid-template-columns: min-content 1fr min-content;
   grid-template-rows: 1fr;
@@ -8,7 +7,6 @@
 
 .departure-route {
   padding: 0.5rem 1rem;
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,7 +14,6 @@
 
 .departure-destination {
   padding: 0.5rem 1rem;
-
   display: flex;
   align-items: center;
 }
@@ -24,7 +21,6 @@
 .departure-time {
   padding: 0.5rem 1rem;
   text-wrap: nowrap;
-
   display: flex;
   justify-content: center;
   align-items: center;
