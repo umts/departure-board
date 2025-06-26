@@ -1,9 +1,9 @@
 import classNames from './DepartureBoard.module.css'
 
-export default function DepartureBoard () {
+export default function DepartureBoard ({ children }) {
   return (
     <div className={classNames['departure-board']}>
-      <h1>departure-board</h1>
+      {children}
     </div>
   )
 }
