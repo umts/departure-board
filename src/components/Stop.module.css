@@ -3,9 +3,3 @@
   flex-direction: column;
   gap: 0.5rem;
 }
-
-.stop-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-}
