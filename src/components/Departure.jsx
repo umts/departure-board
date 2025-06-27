@@ -1,14 +1,9 @@
-import { format, formatDistanceToNow } from 'date-fns'
-import { useEffect, useState } from 'react'
+import { useContext } from 'react'
+import DepartureTimeFormatterContext from '../contexts/DepartureTimeFormatterContext.js'
 import classNames from './Departure.module.css'
 
 export default function Departure ({ route, destination, time, color, textColor }) {
-  const [timeToggle, setTimeToggle] = useState(true)
-  useEffect(() => {
-    const timeout = setTimeout(() => setTimeToggle(!(timeToggle)), 5000)
-    return () => clearTimeout(timeout)
-  }, [timeToggle])
-
+  const timeFormatter = useContext(DepartureTimeFormatterContext)
   return (
     <div className={classNames['departure-container']} style={{ backgroundColor: color, color: textColor }}>
       <div className={classNames['departure-route']}>
@@ -18,7 +13,7 @@ export default function Departure ({ route, destination, time, color, textColor 
         {destination}
       </div>
       <div className={classNames['departure-time']}>
-        {(timeToggle) ? format(time, 'h:mm aaa') : formatDistanceToNow(time)}
+        {timeFormatter(time)}
       </div>
     </div>
   )
