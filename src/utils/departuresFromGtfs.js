@@ -2,6 +2,8 @@ import { isBefore, fromUnixTime } from 'date-fns'
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
 
 export default function departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopId) {
+  if (gtfsSchedule === undefined || gtfsTripUpdates === undefined) return undefined
+
   const result = {}
   result.reactId  = `departures-for-stop-${stopId}`
   result.stopName = gtfsSchedule?.stops?.find((stop) => stop.stopId == stopId)?.stopName
@@ -20,7 +22,7 @@ export default function departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopId
   const relevantUpdates = gtfsTripUpdates?.entity?.map((entity) => entity.tripUpdate)
                                                  ?.filter((tripUpdate) => routeIds.includes(tripUpdate.trip.routeId))       // Only want updates relevant to our routes
                                                  ?.filter(
-                                                   (tripUpdate) => tripUpdate.stopTimeUpdate.some(                          
+                                                   (tripUpdate) => tripUpdate.stopTimeUpdate.some(
                                                      (stopTimeUpdate) => stopTimeUpdate.stopId == stopId &&                 // And those routes might not stop at our stop
                                                                          stopTimeUpdate.scheduleRelationship != stopSkipped // We just want the next departure, ignore skipped stops
                                                    )
@@ -52,8 +54,8 @@ export default function departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopId
       destination: departure.trip.tripHeadsign,
       route: route.routeId,
       time: departure.arrivalTime,
-      color: route.routeColor,
-      textColor: route.routeTextColor,
+      color: `#${route.routeColor}`,
+      textColor: `#${route.routeTextColor}`,
       sortOrder: route.routeSortOrder
     })
   })
