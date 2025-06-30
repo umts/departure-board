@@ -5,6 +5,8 @@ export default defineConfig({
   base: '',
   plugins: [react()],
   test: {
+    globalSetup: './test/globalSetup.js',
+    setupFiles: ['./test/setup.js'],
     browser: {
       enabled: true,
       provider: 'playwright',

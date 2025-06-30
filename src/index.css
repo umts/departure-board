@@ -5,6 +5,10 @@
 @import url("@fontsource/open-sans/700.css");
 @import url("@fontsource/open-sans/800.css");
 
+* {
+  box-sizing: border-box;
+}
+
 :root {
   font-family: "Open Sans", sans-serif;
 }
