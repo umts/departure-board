@@ -1,25 +1,28 @@
-.departure-route {
-  border-top-left-radius: 0.5rem;
-  border-bottom-left-radius: 0.5rem;
+.departure-item {
+  border: 0.125rem solid;
   padding: 0.5rem 1rem;
   display: flex;
-  justify-content: center;
   align-items: center;
+}
+
+.departure-route {
+  border-right-width: 0;
+  border-bottom-left-radius: 0.5rem;
+  border-top-left-radius: 0.5rem;
+  justify-content: center;
+  font-weight: 700;
 }
 
 .departure-destination {
-  padding: 0.5rem 1rem;
-  display: flex;
-  align-items: center;
+  border-left-width: 0;
+  border-right-width: 0;
 }
 
 .departure-time {
-  border-top-right-radius: 0.5rem;
+  border-left-width: 0;
   border-bottom-right-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  text-wrap: nowrap;
-  display: flex;
+  border-top-right-radius: 0.5rem;
   justify-content: end;
-  align-items: center;
+  text-wrap: nowrap;
 }
 

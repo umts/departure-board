@@ -4,15 +4,16 @@ import classNames from './Departure.module.css'
 
 export default function Departure ({ route, destination, time, color, textColor }) {
   const timeFormatter = useContext(DepartureTimeFormatterContext)
+  const colorings = { backgroundColor: `${color}77`, borderColor: color }
   return (
     <>
-      <div className={classNames['departure-route']} style={{ backgroundColor: color, color: textColor }}>
+      <div className={`${classNames['departure-item']} ${classNames['departure-route']}`} style={colorings}>
         {route}
       </div>
-      <div className={classNames['departure-destination']} style={{ backgroundColor: color, color: textColor }}>
+      <div className={`${classNames['departure-item']} ${classNames['departure-destination']}`} style={colorings}>
         {destination}
       </div>
-      <div className={classNames['departure-time']} style={{ backgroundColor: color, color: textColor }}>
+      <div className={`${classNames['departure-item']} ${classNames['departure-time']}`} style={colorings}>
         {timeFormatter(time)}
       </div>
     </>
