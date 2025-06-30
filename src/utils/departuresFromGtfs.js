@@ -63,17 +63,16 @@ function parseStopId(stopId) {
   })
 
   // Now map over those shapes to our departures format
-  result.departures = []
-  shapeToNextDepartureMap.values().forEach((departure) => {
+  result.departures = shapeToNextDepartureMap.values().map((departure) => {
     const route = gtfsSchedule.routes.find((route) => route.routeId === departure.trip.routeId)
-    result.departures.push({
+    return {
       id: departure.trip.tripId,
       destination: departure.trip.tripHeadsign,
       route: route.routeShortName,
       time: departure.departureTime,
       color: `#${route.routeColor}`,
       sortOrder: route.routeSortOrder,
-    })
+    }
   })
 
   result.departures.sort((departure1, departure2) => Number(departure1.sortOrder) - Number(departure2.sortOrder))
