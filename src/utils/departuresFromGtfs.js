@@ -1,54 +1,59 @@
 import { isBefore, fromUnixTime } from 'date-fns'
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
 
-export default function departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopId) {
-  if (gtfsSchedule === undefined || gtfsTripUpdates === undefined) return undefined
+const STOP_SKIPPED = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship['SKIPPED']
 
-  const result = {}
-  result.reactId  = `departures-for-stop-${stopId}`
-  result.stopName = gtfsSchedule?.stops?.find((stop) => stop.stopId == stopId)?.stopName
+export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopId) {
+  if (gtfsSchedule?.stops === undefined ||
+      gtfsSchedule?.stopTimes === undefined ||
+      gtfsSchedule?.trips === undefined ||
+      gtfsTripUpdates === undefined) {
+    return undefined
+  }
+
+  const stop = gtfsSchedule.stops.find((stop) => stop.stopId === stopId)
+  if (stop === undefined) return undefined
+
+  const result = { stopId: stop.stopId, stopName: stop.stopName }
 
   // Isolate relevant trips based on our stop id
-  const tripIds = gtfsSchedule?.stopTimes?.filter((stopTime) => stopTime.stopId == stopId)
-                                         ?.map((stopTime) => stopTime.tripId)
+  const tripIds = gtfsSchedule.stopTimes
+    .filter((stopTime) => stopTime.stopId === stopId)
+    .map((stopTime) => stopTime.tripId)
 
   // Create then splat a Set to enforce uniqueness after mapping trip ids to their routes
-  const routeIds = [ ...new Set(
-    gtfsSchedule?.trips?.filter((trip) => tripIds?.includes(trip.tripId))?.map((trip) => trip.routeId)
-  ) ]
+  const routeIds = [...new Set(
+    gtfsSchedule.trips.filter((trip) => tripIds.includes(trip.tripId)).map((trip) => trip.routeId)
+  )]
 
   // Now retain updates which are for stops on our routes at this stop which haven't been cancelled
-  const stopSkipped = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship["SKIPPED"]
-  const relevantUpdates = gtfsTripUpdates?.entity?.map((entity) => entity.tripUpdate)
-                                                 ?.filter((tripUpdate) => routeIds.includes(tripUpdate.trip.routeId))       // Only want updates relevant to our routes
-                                                 ?.filter(
-                                                   (tripUpdate) => tripUpdate.stopTimeUpdate.some(
-                                                     (stopTimeUpdate) => stopTimeUpdate.stopId == stopId &&                 // And those routes might not stop at our stop
-                                                                         stopTimeUpdate.scheduleRelationship != stopSkipped // We just want the next departure, ignore skipped stops
-                                                   )
-                                                 )
+  const relevantUpdates = gtfsTripUpdates.entity
+    .map((entity) => entity.tripUpdate)
+    .filter((tripUpdate) => routeIds.includes(tripUpdate.trip.routeId)) // Only want updates relevant to our routes
+    .filter((tripUpdate) => tripUpdate.stopTimeUpdate.some((stopTimeUpdate) =>
+      stopTimeUpdate.stopId === stopId &&                  // And those routes might not stop at our stop
+      stopTimeUpdate.scheduleRelationship !== STOP_SKIPPED // We just want the next departure, ignore skipped stops
+    ))
 
-  // GTFS deals with many destinations on a route though shapes. We're really showing the time till the next bus servicing
-  // each shape at this stop. So go through our updates and find the earliest departure on each shape.
+  // GTFS deals with many destinations on a route though shapes. We're really showing the time till the next bus
+  // servicing each shape at this stop. So go through our updates and find the earliest departure on each shape.
   const shapeToNextDepartureMap = new Map()
-  relevantUpdates?.forEach((tripUpdate) => {
-    const trip = gtfsSchedule?.trips?.find((trip) => trip.tripId == tripUpdate.trip.tripId)
-    const shapeId = trip?.shapeId
-    const arrivalTime = fromUnixTime(tripUpdate.stopTimeUpdate
-                                               .find((stopTimeUpdate) => stopTimeUpdate.stopId == stopId)
-                                               .arrival.time)
-    if (shapeToNextDepartureMap.get(shapeId) === undefined || isBefore(arrivalTime, shapeToNextDepartureMap.get(shapeId).arrivalTime)) {
-      shapeToNextDepartureMap.set(shapeId, {
-        arrivalTime: arrivalTime,
-        trip: trip
-      })
+  relevantUpdates.forEach((tripUpdate) => {
+    const trip = gtfsSchedule.trips.find((trip) => trip.tripId === tripUpdate.trip.tripId)
+    const shapeId = trip.shapeId
+    const arrivalTime = fromUnixTime(
+      tripUpdate.stopTimeUpdate.find((stopTimeUpdate) => stopTimeUpdate.stopId === stopId).arrival.time
+    )
+    if (shapeToNextDepartureMap.get(shapeId) === undefined ||
+        isBefore(arrivalTime, shapeToNextDepartureMap.get(shapeId).arrivalTime)) {
+      shapeToNextDepartureMap.set(shapeId, { arrivalTime, trip })
     }
   })
 
   // Now map over those shapes to our departures format
-  result.departures = [];
+  result.departures = []
   shapeToNextDepartureMap.values().forEach((departure) => {
-    const route = gtfsSchedule.routes.find((route) => route.routeId == departure.trip.routeId)
+    const route = gtfsSchedule.routes.find((route) => route.routeId === departure.trip.routeId)
     result.departures.push({
       reactId: departure.trip.tripId,
       destination: departure.trip.tripHeadsign,
@@ -56,7 +61,7 @@ export default function departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopId
       time: departure.arrivalTime,
       color: `#${route.routeColor}`,
       textColor: `#${route.routeTextColor}`,
-      sortOrder: route.routeSortOrder
+      sortOrder: route.routeSortOrder,
     })
   })
 

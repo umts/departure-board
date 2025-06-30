@@ -16,6 +16,7 @@
     "@vitejs/plugin-react": "*",
     "date-fns": "*",
     "gtfs-react-hooks": "*",
+    "gtfs-realtime-bindings": "*",
     "react": "*",
     "react-dom": "*",
     "vite": "*"
