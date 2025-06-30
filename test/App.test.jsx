@@ -20,6 +20,9 @@ describe('App', () => {
   it('renders nothing when no data has been fetched', async () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => undefined)
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => undefined)
+    const url = new URL(location)
+    url.searchParams.set('stopIds', '116')
+    history.pushState({}, '', url)
 
     const { container } = render(<App />)
     await expect(container).toBeEmptyDOMElement()
@@ -31,6 +34,9 @@ describe('App', () => {
 
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => gtfsSchedule)
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => gtfsTripUpdates)
+    const url = new URL(location)
+    url.searchParams.set('stopIds', '116')
+    history.pushState({}, '', url)
 
     const { getByText } = render(<App />)
     await expect.element(getByText('Amherst College')).toBeVisible()
