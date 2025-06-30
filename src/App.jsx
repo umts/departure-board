@@ -14,7 +14,8 @@ export default function App () {
   const tripUpdatesResolver = useFetchResolver('http://localhost:9292/gtfs-rt/trip-updates')
   const gtfsTripUpdates = useGtfsRealtime(tripUpdatesResolver, 30 * 1000)
 
-  const departures = departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopIds[0])
+  const maybeDepartures = departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopIds)
+  const departures = maybeDepartures !== undefined ? maybeDepartures[0] : undefined
 
   return (
     <>
