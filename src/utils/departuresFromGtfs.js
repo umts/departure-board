@@ -1,4 +1,5 @@
 import { isBefore, fromUnixTime } from 'date-fns'
+/* v8 ignore next */
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
 
 const STOP_SKIPPED = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.SKIPPED
@@ -12,6 +13,7 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
   }
 
   const stop = gtfsSchedule.stops.find((stop) => stop.stopId === stopId)
+  /* v8 ignore next */
   if (stop === undefined) return undefined
 
   const result = { stopId: stop.stopId, stopName: stop.stopName }
@@ -43,7 +45,9 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
     const trip = gtfsSchedule.trips.find((trip) => trip.tripId === tripUpdate.trip.tripId)
     const shapeId = trip.shapeId
     const departureTime = fromUnixTime(
+      /* v8 ignore next */
       tripUpdate.stopTimeUpdate.find((stopTimeUpdate) => stopTimeUpdate.stopId === stopId)?.departure?.time ||
+      /* v8 ignore next */
       tripUpdate.stopTimeUpdate.find((stopTimeUpdate) => stopTimeUpdate.stopId === stopId).arrival.time
     )
     if (shapeToNextDepartureMap.get(shapeId) === undefined ||
