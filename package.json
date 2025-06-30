@@ -7,7 +7,7 @@
     "build": "vite build",
     "dev": "vite",
     "lint": "eslint",
-    "lint:css": "stylelint **/*.css **/*.module.css",
+    "lint:css": "stylelint **/*.css **/*.module.css **/*.scss **/*.module.scss",
     "preview": "vite preview",
     "test": "vitest run"
   },
@@ -19,6 +19,7 @@
     "gtfs-realtime-bindings": "*",
     "react": "*",
     "react-dom": "*",
+    "sass": "*",
     "vite": "*"
   },
   "devDependencies": {
@@ -30,6 +31,7 @@
     "playwright": "*",
     "stylelint": "*",
     "stylelint-config-standard": "*",
+    "stylelint-config-standard-scss": "*",
     "vitest": "*",
     "vitest-browser-react": "*"
   }

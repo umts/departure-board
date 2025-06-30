@@ -31,7 +31,6 @@ export default function App () {
                   destination={departure.destination}
                   time={departure.time}
                   color={departure.color}
-                  textColor={departure.textColor}
                 />
               ))}
             </Stop>
