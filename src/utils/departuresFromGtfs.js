@@ -41,12 +41,13 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
   relevantUpdates.forEach((tripUpdate) => {
     const trip = gtfsSchedule.trips.find((trip) => trip.tripId === tripUpdate.trip.tripId)
     const shapeId = trip.shapeId
-    const arrivalTime = fromUnixTime(
+    const departureTime = fromUnixTime(
+      tripUpdate.stopTimeUpdate.find((stopTimeUpdate) => stopTimeUpdate.stopId === stopId).departure.time ||
       tripUpdate.stopTimeUpdate.find((stopTimeUpdate) => stopTimeUpdate.stopId === stopId).arrival.time
     )
     if (shapeToNextDepartureMap.get(shapeId) === undefined ||
-        isBefore(arrivalTime, shapeToNextDepartureMap.get(shapeId).arrivalTime)) {
-      shapeToNextDepartureMap.set(shapeId, { arrivalTime, trip })
+        isBefore(departureTime, shapeToNextDepartureMap.get(shapeId).departureTime)) {
+      shapeToNextDepartureMap.set(shapeId, { departureTime, trip })
     }
   })
 
@@ -58,7 +59,7 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
       id: departure.trip.tripId,
       destination: departure.trip.tripHeadsign,
       route: route.routeShortName,
-      time: departure.arrivalTime,
+      time: departure.departureTime,
       color: `#${route.routeColor}`,
       textColor: `#${route.routeTextColor}`,
       sortOrder: route.routeSortOrder,
