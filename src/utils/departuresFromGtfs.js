@@ -31,8 +31,9 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
     .map((entity) => entity.tripUpdate)
     .filter((tripUpdate) => routeIds.includes(tripUpdate.trip.routeId)) // Only want updates relevant to our routes
     .filter((tripUpdate) => tripUpdate.stopTimeUpdate.some((stopTimeUpdate) =>
-      stopTimeUpdate.stopId === stopId &&                  // And those routes might not stop at our stop
-      stopTimeUpdate.scheduleRelationship !== STOP_SKIPPED // We just want the next departure, ignore skipped stops
+      stopTimeUpdate.stopId === stopId &&                       // Only want updates relevant to our stop
+      stopTimeUpdate.scheduleRelationship !== STOP_SKIPPED &&   // We just want the next departure, ignore skipped stops
+      tripUpdate.stopTimeUpdate[tripUpdate.stopTimeUpdate.length - 1] !== stopTimeUpdate // If it's the last stop in the sequence, we don't care about it's arrival
     ))
 
   // GTFS deals with many destinations on a route though shapes. We're really showing the time till the next bus
@@ -42,7 +43,7 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
     const trip = gtfsSchedule.trips.find((trip) => trip.tripId === tripUpdate.trip.tripId)
     const shapeId = trip.shapeId
     const departureTime = fromUnixTime(
-      tripUpdate.stopTimeUpdate.find((stopTimeUpdate) => stopTimeUpdate.stopId === stopId).departure.time ||
+      tripUpdate.stopTimeUpdate.find((stopTimeUpdate) => stopTimeUpdate.stopId === stopId)?.departure?.time ||
       tripUpdate.stopTimeUpdate.find((stopTimeUpdate) => stopTimeUpdate.stopId === stopId).arrival.time
     )
     if (shapeToNextDepartureMap.get(shapeId) === undefined ||
