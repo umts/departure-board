@@ -23,7 +23,7 @@ export default function App () {
             <Stop name={departures.stopName}>
               {departures.departures.map((departure) => (
                 <Departure
-                  key={departure.reactId}
+                  key={departure.id}
                   route={departure.route}
                   destination={departure.destination}
                   time={departure.time}

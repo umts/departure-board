@@ -55,9 +55,9 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
   shapeToNextDepartureMap.values().forEach((departure) => {
     const route = gtfsSchedule.routes.find((route) => route.routeId === departure.trip.routeId)
     result.departures.push({
-      reactId: departure.trip.tripId,
+      id: departure.trip.tripId,
       destination: departure.trip.tripHeadsign,
-      route: route.routeId,
+      route: route.routeShortName,
       time: departure.arrivalTime,
       color: `#${route.routeColor}`,
       textColor: `#${route.routeTextColor}`,
