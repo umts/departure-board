@@ -12,12 +12,12 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
 
   stopIds = [...new Set(stopIds)]
 
-  return stopIds.map(getStopDepartures)
+  return stopIds.map((stopId) => getStopDepartures(gtfsSchedule, gtfsTripUpdates, stopId))
 }
 
 const STOP_SKIPPED = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.SKIPPED
 
-function getStopDepartures(stopId) {
+function getStopDepartures(gtfsSchedule, gtfsTripUpdates, stopId) {
   const stop = gtfsSchedule.stops.find((stop) => stop.stopId === stopId)
   /* v8 ignore next */
   if (stop === undefined) return undefined
@@ -73,7 +73,7 @@ function getStopDepartures(stopId) {
       color: `#${route.routeColor}`,
       sortOrder: route.routeSortOrder,
     }
-  })
+  }).toArray()
 
   result.departures.sort((departure1, departure2) => Number(departure1.sortOrder) - Number(departure2.sortOrder))
   return result
