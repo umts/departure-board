@@ -1,7 +1,7 @@
 import { isBefore, fromUnixTime } from 'date-fns'
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
 
-const STOP_SKIPPED = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship['SKIPPED']
+const STOP_SKIPPED = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.SKIPPED
 
 export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopId) {
   if (gtfsSchedule?.stops === undefined ||
