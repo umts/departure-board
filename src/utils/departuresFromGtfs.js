@@ -12,6 +12,8 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
     return undefined
   }
 
+  stopIds = [...new Set(stopIds)]
+
   return stopIds.map((stopId) => {
     const stop = gtfsSchedule.stops.find((stop) => stop.stopId === stopId)
     /* v8 ignore next */

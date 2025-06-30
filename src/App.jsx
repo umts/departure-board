@@ -22,7 +22,7 @@ export default function App () {
           <DepartureBoard>
             {stopDepartures.map((departures, index) => {
               return (
-                <Stop name={departures.stopName}>
+                <Stop name={departures.stopName} key={departures.stopId}>
                   {departures.departures.map((departure) => (
                     <Departure
                       key={departure.id}
