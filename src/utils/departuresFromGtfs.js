@@ -66,7 +66,6 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
       route: route.routeShortName,
       time: departure.departureTime,
       color: `#${route.routeColor}`,
-      textColor: `#${route.routeTextColor}`,
       sortOrder: route.routeSortOrder,
     })
   })

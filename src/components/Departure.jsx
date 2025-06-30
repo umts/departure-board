@@ -1,19 +1,19 @@
 import { useContext } from 'react'
 import DepartureTimeFormatterContext from '../contexts/DepartureTimeFormatterContext.js'
-import classNames from './Departure.module.css'
+import classNames from './Departure.module.scss'
 
-export default function Departure ({ route, destination, time, color, textColor }) {
+export default function Departure ({ route, destination, time, color }) {
   const timeFormatter = useContext(DepartureTimeFormatterContext)
-  const colorings = { backgroundColor: `${color}77`, borderColor: color }
+  const colorings = { backgroundColor: `${color}55`, borderColor: color }
   return (
     <>
-      <div className={`${classNames['departure-item']} ${classNames['departure-route']}`} style={colorings}>
+      <div className={classNames['departure-route']} style={colorings}>
         {route}
       </div>
-      <div className={`${classNames['departure-item']} ${classNames['departure-destination']}`} style={colorings}>
+      <div className={classNames['departure-destination']} style={colorings}>
         {destination}
       </div>
-      <div className={`${classNames['departure-item']} ${classNames['departure-time']}`} style={colorings}>
+      <div className={classNames['departure-time']} style={colorings}>
         {timeFormatter(time)}
       </div>
     </>
