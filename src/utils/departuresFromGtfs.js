@@ -10,9 +10,11 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
     return undefined
   }
 
-  stopIds = [...new Set(stopIds)]
-
-  return stopIds.map((stopId) => getStopDepartures(gtfsSchedule, gtfsTripUpdates, stopId))
+  stopIds = new Set(stopIds)
+  return stopIds.values()
+    .map((stopId) => getStopDepartures(gtfsSchedule, gtfsTripUpdates, stopId))
+    .filter((departures) => departures)
+    .toArray()
 }
 
 const STOP_SKIPPED = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.SKIPPED
