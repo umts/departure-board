@@ -44,18 +44,21 @@ function getStopDepartures (gtfsSchedule, gtfsTripUpdates, stopId) {
 
   const result = { stopId: stop.stopId, stopName: stop.stopName }
 
-  result.departures = shapeToNextDepartureMap.values().map((departure) => {
-    const route = gtfsSchedule.routes.find((route) => route.routeId === departure.trip.routeId)
-    return {
-      id: departure.trip.tripId,
-      destination: departure.trip.tripHeadsign,
-      route: route.routeShortName,
-      time: departure.departureTime,
-      color: `#${route.routeColor}`,
-      sortOrder: route.routeSortOrder,
-    }
-  }).toArray()
+  result.departures = shapeToNextDepartureMap
+    .values()
+    .map((departure) => {
+      const route = gtfsSchedule.routes.find((route) => route.routeId === departure.trip.routeId)
+      return {
+        id: departure.trip.tripId,
+        destination: departure.trip.tripHeadsign,
+        route: route.routeShortName,
+        time: departure.departureTime,
+        color: `#${route.routeColor}`,
+        sortOrder: route.routeSortOrder,
+      }
+    })
+    .toArray()
+    .sort((departure1, departure2) => Number(departure1.sortOrder) - Number(departure2.sortOrder))
 
-  result.departures.sort((departure1, departure2) => Number(departure1.sortOrder) - Number(departure2.sortOrder))
   return result
 }
