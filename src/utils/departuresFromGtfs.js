@@ -16,13 +16,12 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
     .filter((departures) => departures)
 }
 
-const STOP_SKIPPED = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.SKIPPED
-
 function getStopDepartures (gtfsSchedule, gtfsTripUpdates, stopId) {
   const stop = gtfsSchedule.stops.find((stop) => stop.stopId === stopId)
   /* v8 ignore next */
   if (stop === undefined) return undefined
 
+  const STOP_SKIPPED = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.SKIPPED
   const shapeToNextDepartureMap = new Map()
   gtfsTripUpdates.entity
     .map((entity) => entity.tripUpdate)
