@@ -19,7 +19,7 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
 
 const STOP_SKIPPED = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.SKIPPED
 
-function getStopDepartures(gtfsSchedule, gtfsTripUpdates, stopId) {
+function getStopDepartures (gtfsSchedule, gtfsTripUpdates, stopId) {
   const stop = gtfsSchedule.stops.find((stop) => stop.stopId === stopId)
   /* v8 ignore next */
   if (stop === undefined) return undefined
