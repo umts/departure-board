@@ -26,15 +26,10 @@ function getStopDepartures(gtfsSchedule, gtfsTripUpdates, stopId) {
 
   const result = { stopId: stop.stopId, stopName: stop.stopName }
 
-  // Isolate relevant trips based on our stop id
-  const tripIds = gtfsSchedule.stopTimes
+  // Can only isolate route ids by stop id -> stop times -> trips -> route
+  const routeIds = gtfsSchedule.stopTimes
     .filter((stopTime) => stopTime.stopId === stopId)
-    .map((stopTime) => stopTime.tripId)
-
-  // Create then splat a Set to enforce uniqueness after mapping trip ids to their routes
-  const routeIds = [...new Set(
-    gtfsSchedule.trips.filter((trip) => tripIds.includes(trip.tripId)).map((trip) => trip.routeId)
-  )]
+    .map((stopTime) => gtfsSchedule.trips.find((trip) => trip.tripId === stopTime.tripId).routeId)
 
   // Now retain updates which are for stops on our routes at this stop which haven't been cancelled
   const relevantUpdates = gtfsTripUpdates.entity
