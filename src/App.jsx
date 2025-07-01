@@ -1,42 +1,45 @@
-import { useGtfsSchedule, useGtfsRealtime, useFetchResolver } from 'gtfs-react-hooks'
-import Departure from './components/Departure.jsx'
-import DepartureBoard from './components/DepartureBoard.jsx'
-import Stop from './components/Stop.jsx'
-import useConfig from './hooks/useConfig.js'
-import departuresFromGtfs from './utils/departuresFromGtfs.js'
+import { useEffect, useState } from 'react'
+
+const n = 2
+const r = 0.8
+
+const keys = []
+for (let i = 0; i < n; i++) {
+  keys[i] = i
+}
 
 export default function App () {
-  const { stopIds } = useConfig()
+  const [dimensions, setDimensions] = useState([window.innerWidth, window.innerHeight])
+  useEffect(() => {
+    const handleResize = () => setDimensions([window.innerWidth, window.innerHeight])
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
-  const scheduleResolver = useFetchResolver('http://localhost:9292/gtfs')
-  const gtfsSchedule = useGtfsSchedule(scheduleResolver, 24 * 60 * 60 * 1000)
-
-  const tripUpdatesResolver = useFetchResolver('http://localhost:9292/gtfs-rt/trip-updates')
-  const gtfsTripUpdates = useGtfsRealtime(tripUpdatesResolver, 30 * 1000)
-
-  const stops = departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopIds)
+  const width = gridWidth(n, dimensions[0], dimensions[1])
 
   return (
-    <>
-      {(stops === undefined)
-        ? null
-        : (
-          <DepartureBoard>
-            {stops.map((stop) => (
-              <Stop key={stop.id} name={stop.name}>
-                {stop.departures.map((departure) => (
-                  <Departure
-                    key={departure.id}
-                    route={departure.route}
-                    destination={departure.destination}
-                    time={departure.time}
-                    color={departure.color}
-                  />
-                ))}
-              </Stop>
-            ))}
-          </DepartureBoard>
-          )}
-    </>
+    <div className='grid' style={{ gridTemplateColumns: `repeat(${width}, 1fr)` }}>
+      {keys.map((key) => (
+        <div key={key} className='item' />
+      ))}
+    </div>
   )
+}
+
+function gridWidth (n, x, y) {
+  let width = 1
+  let height = 1
+
+  while (width * height < n) {
+    if ((x / y) > r) {
+      x = x / 2
+      width++
+    } else {
+      y = y / 2
+      height++
+    }
+  }
+
+  return width
 }
