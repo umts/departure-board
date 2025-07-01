@@ -22,10 +22,11 @@ function getStopDepartures (gtfsSchedule, gtfsTripUpdates, stopId) {
   if (stop === undefined) return undefined
 
   const STOP_SKIPPED = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.SKIPPED
-  const shapeToNextDepartureMap = new Map()
-  gtfsTripUpdates.entity
+  const processedShapes = new Set()
+  const result = { stopId: stop.stopId, stopName: stop.stopName }
+  result.departures = gtfsTripUpdates.entity
     .map((entity) => entity.tripUpdate)
-    .forEach((tripUpdate) => {
+    .map((tripUpdate) => {
       const stopTimeUpdate = tripUpdate.stopTimeUpdate.find((stopTimeUpdate) => stopTimeUpdate.stopId === stopId)
       if (
         stopTimeUpdate &&
@@ -36,16 +37,14 @@ function getStopDepartures (gtfsSchedule, gtfsTripUpdates, stopId) {
         const departureTime = fromUnixTime((stopTimeUpdate.departure || stopTimeUpdate.arrival).time)
         const trip = gtfsSchedule.trips.find((trip) => trip.tripId === tripUpdate.trip.tripId)
         const shapeId = trip.shapeId
-        if (!shapeToNextDepartureMap.has(shapeId) && isFuture(departureTime)) {
-          shapeToNextDepartureMap.set(shapeId, { departureTime, trip })
+        if (!processedShapes.has(shapeId) && isFuture(departureTime)) {
+          processedShapes.add(shapeId)
+          return { departureTime, trip }
         }
       }
+      return undefined
     })
-
-  const result = { stopId: stop.stopId, stopName: stop.stopName }
-
-  result.departures = shapeToNextDepartureMap
-    .values()
+    .filter((departure) => !!departure)
     .map((departure) => {
       const route = gtfsSchedule.routes.find((route) => route.routeId === departure.trip.routeId)
       return {
@@ -57,7 +56,6 @@ function getStopDepartures (gtfsSchedule, gtfsTripUpdates, stopId) {
         sortOrder: route.routeSortOrder,
       }
     })
-    .toArray()
     .sort((departure1, departure2) => Number(departure1.sortOrder) - Number(departure2.sortOrder))
 
   return result
