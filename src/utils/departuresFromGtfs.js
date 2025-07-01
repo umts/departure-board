@@ -13,7 +13,7 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
   stopIds = [...new Set(stopIds)]
   return stopIds
     .map((stopId) => getStopDepartures(gtfsSchedule, gtfsTripUpdates, stopId))
-    .filter((departures) => departures)
+    .filter((departures) => !!departures)
 }
 
 function getStopDepartures (gtfsSchedule, gtfsTripUpdates, stopId) {
