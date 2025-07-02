@@ -20,7 +20,13 @@ export default function DepartureBoard ({ children }) {
   }, [timeFormatter])
 
   return (
-    <div className={classNames['departure-board']} style={{ gridTemplateColumns: `repeat(${gridDimensions[0]}, 1fr)` }}>
+    <div
+      className={classNames['departure-board']}
+      style={{
+        gridTemplateColumns: `repeat(${gridDimensions[0]}, 1fr)`,
+        fontSize: `min(3vw, 4vh)`
+      }}
+    >
       <TimeFormatterContext value={timeFormatter}>
         {children}
       </TimeFormatterContext>
