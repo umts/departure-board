@@ -14,26 +14,27 @@ export default function App () {
   const tripUpdatesResolver = useFetchResolver('http://localhost:9292/gtfs-rt/trip-updates')
   const gtfsTripUpdates = useGtfsRealtime(tripUpdatesResolver, 30 * 1000)
 
-  const maybeDepartures = departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopIds)
-  const departures = maybeDepartures !== undefined ? maybeDepartures[0] : undefined
+  const stops = departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopIds)
 
   return (
     <>
-      {(departures === undefined)
+      {(stops === undefined)
         ? null
         : (
           <DepartureBoard>
-            <Stop name={departures.stopName}>
-              {departures.departures.map((departure) => (
-                <Departure
-                  key={departure.id}
-                  route={departure.route}
-                  destination={departure.destination}
-                  time={departure.time}
-                  color={departure.color}
-                />
-              ))}
-            </Stop>
+            {stops.map((stop) => (
+              <Stop key={stop.id} name={stop.name}>
+                {stop.departures.map((departure) => (
+                  <Departure
+                    key={departure.id}
+                    route={departure.route}
+                    destination={departure.destination}
+                    time={departure.time}
+                    color={departure.color}
+                  />
+                ))}
+              </Stop>
+            ))}
           </DepartureBoard>
           )}
     </>
