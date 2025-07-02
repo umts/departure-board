@@ -24,7 +24,7 @@ export default function DepartureBoard ({ children }) {
       className={classNames['departure-board']}
       style={{
         gridTemplateColumns: `repeat(${gridDimensions[0]}, 1fr)`,
-        fontSize: `min(3vw, 4vh)`
+        fontSize: `min(${3 / gridDimensions[0]}vw, ${4 / gridDimensions[1]}vh)`
       }}
     >
       <TimeFormatterContext value={timeFormatter}>
