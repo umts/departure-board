@@ -1,10 +1,10 @@
-$border-radius: 0.5rem;
-$border-width: 0.125rem;
+$border-radius: 0.5em;
+$border-width: 0.125em;
 
 @mixin item {
   border-top: $border-width solid;
   border-bottom: $border-width solid;
-  padding: 0.5rem 1rem;
+  padding: 0.5em 1em;
   display: flex;
   align-items: center;
 }

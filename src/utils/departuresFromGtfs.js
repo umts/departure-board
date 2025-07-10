@@ -19,7 +19,7 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
     /* v8 ignore next */
     if (stop === undefined) return undefined
 
-    const result = { stopId: stop.stopId, stopName: stop.stopName }
+    const result = { id: stop.stopId, name: stop.stopName }
 
     // Isolate relevant trips based on our stop id
     const tripIds = gtfsSchedule.stopTimes
