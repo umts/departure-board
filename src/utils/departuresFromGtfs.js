@@ -23,7 +23,7 @@ function getStopDepartures (gtfsSchedule, gtfsTripUpdates, stopId) {
 
   const STOP_SKIPPED = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.SKIPPED
   const processedShapes = new Set()
-  const result = { stopId: stop.stopId, stopName: stop.stopName }
+  const result = { id: stop.stopId, name: stop.stopName }
   result.departures = gtfsTripUpdates.entity
     .map((entity) => entity.tripUpdate)
     .map((tripUpdate) => {
