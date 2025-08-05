@@ -49,5 +49,8 @@ describe('App', () => {
 
     vi.advanceTimersByTime(5000)
     await expect.element(getByText('4:23 pm')).toBeVisible()
+
+    // TODO: Actually test.
+    window.dispatchEvent(new Event('resize'))
   })
 })

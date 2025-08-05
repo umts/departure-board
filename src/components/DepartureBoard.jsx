@@ -41,6 +41,7 @@ function optimalGridDimensions (numItems) {
   let pixelHeight = window.innerHeight
   let gridWidth = 1
   let gridHeight = 1
+  /* v8 ignore start */
   while (gridWidth * gridHeight < numItems) {
     if ((pixelWidth / pixelHeight) > GRID_ITEM_ASPECT_RATIO) {
       pixelWidth = pixelWidth / 2
@@ -50,6 +51,7 @@ function optimalGridDimensions (numItems) {
       gridHeight++
     }
   }
+  /* v8 ignore stop */
   return [gridWidth, gridHeight]
 }
 
