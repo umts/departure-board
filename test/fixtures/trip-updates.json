@@ -9,15 +9,28 @@
           {
             "stopId": "PRIMARY_STOP",
             "scheduleRelationship": "SCHEDULED",
+            "arrival": {
+              "time": ""
+            },
             "departure": {
-              "time": "1751055390"
+              "time": ""
             }
           },
           {
             "stopId": "PRIMARY_STOP",
             "scheduleRelationship": "SCHEDULED",
             "departure": {
-              "time": "1751055390"
+              "time": "600"
+            }
+          },
+          {
+            "stopId": "PRIMARY_STOP",
+            "scheduleRelationship": "SCHEDULED",
+            "arrival": {
+              "time": "200"
+            },
+            "departure": {
+              "time": "300"
             }
           },
           {
@@ -35,8 +48,11 @@
           {
             "stopId": "SECONDARY_STOP",
             "scheduleRelationship": "SCHEDULED",
+            "arrival": {
+              "time": "200"
+            },
             "departure": {
-              "time": "1751055390"
+              "time": "300"
             }
           },
           {

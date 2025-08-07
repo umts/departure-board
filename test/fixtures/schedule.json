@@ -2,12 +2,12 @@
   "routes": [
     {
       "routeId": "PRIMARY_ROUTE",
-      "routeShortName": "PRIMARY ROUTE",
+      "routeShortName": "Primary route",
       "routeColor": "111111"
     },
     {
       "routeId": "SECONDARY_ROUTE",
-      "routeShortName": "SECONDARY ROUTE",
+      "routeShortName": "Secondary route",
       "routeColor": "222222"
     }
   ],
@@ -17,42 +17,42 @@
       "tripId": "UNSHAPED_TRIP",
       "routeId": "PRIMARY_ROUTE",
       "shapeId": "",
-      "tripHeadsign": "UNSHAPED TRIP"
+      "tripHeadsign": "Unshaped trip"
     },
     {
       "tripId": "SHAPED_TRIP",
       "routeId": "PRIMARY_ROUTE",
       "shapeId": "PRIMARY_SHAPE",
-      "tripHeadsign": "SHAPED TRIP"
+      "tripHeadsign": "Shaped trip"
     },
     {
       "tripId": "SHARED_ROUTE_AND_SHAPE_TRIP",
       "routeId": "PRIMARY_ROUTE",
       "shapeId": "PRIMARY_SHAPE",
-      "tripHeadsign": "SHARED ROUTE AND SHAPE TRIP"
+      "tripHeadsign": "Shared route and shape trip"
     },
     {
       "tripId": "SHARED_ROUTE_TRIP",
       "routeId": "PRIMARY_ROUTE",
       "shapeId": "SECONDARY_SHAPE",
-      "tripHeadsign": "SHARED ROUTE TRIP"
+      "tripHeadsign": "Shared route trip"
     },
     {
       "tripId": "SHARED_SHAPE_TRIP",
       "routeId": "SECONDARY_ROUTE",
       "shapeId": "PRIMARY_SHAPE",
-      "tripHeadsign": "SHARED SHAPE TRIP"
+      "tripHeadsign": "Shared shape trip"
     }
   ],
 
   "stops": [
     {
       "stopId": "PRIMARY_STOP",
-      "stopName": "PRIMARY STOP"
+      "stopName": "Primary stop"
     },
     {
       "stopId": "SECONDARY_STOP",
-      "stopName": "SECONDARY STOP"
+      "stopName": "Secondary stop"
     }
   ]
 }

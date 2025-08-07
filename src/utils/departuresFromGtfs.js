@@ -2,18 +2,51 @@ import { isFuture, fromUnixTime } from 'date-fns'
 /* v8 ignore next */
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
 
+const index = (arr, callback) => {
+  const indexed = {}
+  arr.forEach((item) => { indexed[callback(item)] = item })
+  return indexed
+}
+
 export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopIds) {
-  if (gtfsSchedule?.stops === undefined ||
-      gtfsSchedule?.stopTimes === undefined ||
+  if (gtfsSchedule?.routes === undefined ||
+      gtfsSchedule?.stops === undefined ||
       gtfsSchedule?.trips === undefined ||
       gtfsTripUpdates === undefined) {
     return undefined
   }
 
   stopIds = [...new Set(stopIds)]
-  return stopIds
-    .map((stopId) => getStopDepartures(gtfsSchedule, gtfsTripUpdates, stopId))
-    .filter((departures) => !!departures)
+  const routesById = index(gtfsSchedule.routes, (route) => route.routeId)
+  const stopsById = index(gtfsSchedule.stops, (stop) => stop.stopId)
+  const tripsById = index(gtfsSchedule.trips, (trip) => trip.tripId)
+
+  const stops = {}
+
+  gtfsTripUpdates.entity.forEach((entity) => {
+    const trip = tripsById[entity.tripUpdate.trip.tripId]
+
+    if (trip === undefined) return
+
+    entity.tripUpdate.stopTimeUpdate.forEach((stopTimeUpdate) => {
+      if (!(stopIds.includes(stopTimeUpdate.stopId))) return
+
+      const stop = stopsById[stopTimeUpdate.stopId]
+      const route = routesById[trip.routeId]
+
+      stops[stop.stopId] ??= { id: stop.stopId, name: stop.stopName, departures: [] }
+
+      stops[stop.stopId].departures.push({
+        id: trip.tripId,
+        destination: trip.tripHeadsign,
+        route: routesById[tripsById[trip.tripId].routeId].routeShortName,
+        time: fromUnixTime((stopTimeUpdate.departure || stopTimeUpdate.arrival).time),
+        color: `#${route.routeColor}`,
+      })
+    })
+  })
+
+  return Object.values(stops)
 }
 
 function getStopDepartures (gtfsSchedule, gtfsTripUpdates, stopId) {
