@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 import App from '../src/App.jsx'
 
@@ -21,6 +21,12 @@ function configureApp ({ stopIds }) {
 }
 
 describe('App', () => {
+  const currentUnixTime = 43200 // 12 pm
+
+  beforeEach(() => {
+    vi.setSystemTime(new Date(currentUnixTime * 1000))
+  })
+
   it('renders nothing when no data has been fetched', async () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => undefined)
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => undefined)
@@ -30,15 +36,11 @@ describe('App', () => {
   })
 
   it('renders departures', async () => {
-    const currentUnixTime = 43200 // 12 pm
-    vi.setSystemTime(new Date(currentUnixTime * 1000))
-
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
       routes: [{ routeId: 'MY_ROUTE', routeShortName: 'My route', routeColor: '111111' }],
       trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' }],
       stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }]
     }))
-
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
       entity: [
         {
@@ -55,16 +57,71 @@ describe('App', () => {
         }
       ]
     }))
-
     configureApp({ stopIds: 'MY_STOP' })
-
     const { getByText } = render(<App />)
 
     await expect.element(getByText('My stop')).toBeVisible()
     await expect.element(getByText('My routeMy trip12:05 pm', { exact: true })).toBeVisible()
   })
 
-  it('prefers departure times')
+  it('prefers departure times but falls back to arrival times', async () => {
+    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
+      routes: [{ routeId: 'MY_ROUTE', routeShortName: 'My route', routeColor: '111111' }],
+      trips: [
+        { tripId: 'TRIP_ONE', routeId: 'MY_ROUTE', tripHeadsign: 'Trip one' },
+        { tripId: 'TRIP_TWO', routeId: 'MY_ROUTE', tripHeadsign: 'Trip two' },
+        { tripId: 'TRIP_THREE', routeId: 'MY_ROUTE', tripHeadsign: 'Trip three' },
+      ],
+      stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }]
+    }))
+    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
+      entity: [
+        {
+          tripUpdate: {
+            trip: { tripId: 'TRIP_ONE' },
+            stopTimeUpdate: [
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: 'SCHEDULED',
+                departure: { time: currentUnixTime + (60 * 5) }
+              }
+            ]
+          }
+        },
+        {
+          tripUpdate: {
+            trip: { tripId: 'TRIP_THREE' },
+            stopTimeUpdate: [
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: 'SCHEDULED',
+                arrival: { time: currentUnixTime + (60 * 6) },
+                departure: { time: currentUnixTime + (60 * 7) }
+              }
+            ]
+          }
+        },
+        {
+          tripUpdate: {
+            trip: { tripId: 'TRIP_THREE' },
+            stopTimeUpdate: [
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: 'SCHEDULED',
+                arrival: { time: currentUnixTime + (60 * 8) }
+              }
+            ]
+          }
+        }
+      ]
+    }))
+    configureApp({ stopIds: 'MY_STOP' })
+    const { getByText } = render(<App />)
+
+    await expect.element(getByText('My routeMy trip12:05 pm', { exact: true })).toBeVisible()
+    await expect.element(getByText('My routeMy trip12:07 pm', { exact: true })).toBeVisible()
+    await expect.element(getByText('My routeMy trip12:08 pm', { exact: true })).toBeVisible()
+  })
 
   it('only renders departures for configured stops')
 
