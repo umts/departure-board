@@ -1,6 +1,9 @@
+import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 import App from '../src/App.jsx'
+
+const ScheduleRelationship = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship
 
 const gtfsReactHooksMocks = vi.hoisted(() => ({
   useGtfsSchedule: vi.fn(),
@@ -49,7 +52,7 @@ describe('App', () => {
             stopTimeUpdate: [
               {
                 stopId: 'MY_STOP',
-                scheduleRelationship: 'SCHEDULED',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
                 departure: { time: currentUnixTime + (60 * 5) }
               }
             ]
@@ -62,40 +65,6 @@ describe('App', () => {
 
     await expect(getByText('My stop')).toBeVisible()
     await expect(getByText('My routeMy trip12:05 pm', { exact: true })).toBeVisible()
-  })
-
-  it('only renders departures for configured stops', async () => {
-    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
-      routes: [{ routeId: 'MY_ROUTE', routeShortName: 'My route', routeColor: '111111' }],
-      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' }],
-      stops: [{ stopId: 'STOP_ONE', stopName: 'Stop one' }]
-    }))
-    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
-      entity: [
-        {
-          tripUpdate: {
-            trip: { tripId: 'MY_TRIP' },
-            stopTimeUpdate: [
-              {
-                stopId: 'STOP_ONE',
-                scheduleRelationship: 'SCHEDULED',
-                departure: { time: currentUnixTime + (60 * 5) }
-              },
-              {
-                stopId: 'STOP_TWO',
-                scheduleRelationship: 'SCHEDULED',
-                departure: { time: currentUnixTime + (60 * 6) }
-              }
-            ]
-          }
-        },
-      ]
-    }))
-    configureApp({ stopIds: 'STOP_ONE' })
-    const { getByText } = render(<App />)
-
-    await expect(getByText('My routeMy trip12:05 pm', { exact: true })).toBeVisible()
-    await expect(getByText('My routeMy trip12:06 pm', { exact: true }).query()).toBeNull()
   })
 
   it('prefers departure times but falls back to arrival times', async () => {
@@ -116,7 +85,7 @@ describe('App', () => {
             stopTimeUpdate: [
               {
                 stopId: 'MY_STOP',
-                scheduleRelationship: 'SCHEDULED',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
                 departure: { time: currentUnixTime + (60 * 5) }
               }
             ]
@@ -128,7 +97,7 @@ describe('App', () => {
             stopTimeUpdate: [
               {
                 stopId: 'MY_STOP',
-                scheduleRelationship: 'SCHEDULED',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
                 arrival: { time: currentUnixTime + (60 * 6) },
                 departure: { time: currentUnixTime + (60 * 7) }
               }
@@ -141,7 +110,7 @@ describe('App', () => {
             stopTimeUpdate: [
               {
                 stopId: 'MY_STOP',
-                scheduleRelationship: 'SCHEDULED',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
                 arrival: { time: currentUnixTime + (60 * 8) }
               }
             ]
@@ -155,15 +124,6 @@ describe('App', () => {
     await expect(getByText('My routeMy trip12:05 pm', { exact: true })).toBeVisible()
     await expect(getByText('My routeMy trip12:07 pm', { exact: true })).toBeVisible()
     await expect(getByText('My routeMy trip12:08 pm', { exact: true })).toBeVisible()
-  })
-
-  it('only renders scheduled departures')
-
-  it('only renders departures in the future')
-
-  it('only renders the earliest departures for any given route and shape')
-
-  it('renders departures for multiple stops', async () => {
   })
 
   it('alternates between absolute and relative time', async () => {
@@ -180,5 +140,92 @@ describe('App', () => {
     /*
     window.dispatchEvent(new Event('resize'))
     */
+  })
+
+  it('only renders departures for configured stops', async () => {
+    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
+      routes: [{ routeId: 'MY_ROUTE', routeShortName: 'My route', routeColor: '111111' }],
+      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' }],
+      stops: [{ stopId: 'STOP_ONE', stopName: 'Stop one' }]
+    }))
+    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
+      entity: [
+        {
+          tripUpdate: {
+            trip: { tripId: 'MY_TRIP' },
+            stopTimeUpdate: [
+              {
+                stopId: 'STOP_ONE',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 5) }
+              },
+              {
+                stopId: 'STOP_TWO',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 6) }
+              }
+            ]
+          }
+        },
+      ]
+    }))
+    configureApp({ stopIds: 'STOP_ONE' })
+    const { getByText } = render(<App />)
+
+    await expect(getByText('My routeMy trip12:05 pm', { exact: true })).toBeVisible()
+    await expect(getByText('My routeMy trip12:06 pm', { exact: true }).query()).toBeNull()
+  })
+
+  it('only renders scheduled departures', async () => {
+    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
+      routes: [{ routeId: 'MY_ROUTE', routeShortName: 'My route', routeColor: '111111' }],
+      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' }],
+      stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }]
+    }))
+    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
+      entity: [
+        {
+          tripUpdate: {
+            trip: { tripId: 'MY_TRIP' },
+            stopTimeUpdate: [
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: ScheduleRelationship.NO_DATA,
+                departure: { time: currentUnixTime + (60 * 5) }
+              },
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: ScheduleRelationship.SKIPPED,
+                departure: { time: currentUnixTime + (60 * 6) }
+              },
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: ScheduleRelationship.UNSCHEDULED,
+                departure: { time: currentUnixTime + (60 * 7) }
+              },
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 8) }
+              },
+            ]
+          }
+        },
+      ]
+    }))
+    configureApp({ stopIds: 'MY_STOP' })
+    const { getByText } = render(<App />)
+
+    await expect(getByText('My routeMy trip12:05 pm', { exact: true }).query()).toBeNull()
+    await expect(getByText('My routeMy trip12:06 pm', { exact: true }).query()).toBeNull()
+    await expect(getByText('My routeMy trip12:07 pm', { exact: true }).query()).toBeNull()
+    await expect(getByText('My routeMy trip12:08 pm', { exact: true })).toBeVisible()
+  })
+
+  it('only renders departures in the future')
+
+  it('only renders the earliest departures for any given route and shape')
+
+  it('renders departures for multiple stops', async () => {
   })
 })
