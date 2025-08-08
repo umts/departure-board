@@ -60,8 +60,42 @@ describe('App', () => {
     configureApp({ stopIds: 'MY_STOP' })
     const { getByText } = render(<App />)
 
-    await expect.element(getByText('My stop')).toBeVisible()
-    await expect.element(getByText('My routeMy trip12:05 pm', { exact: true })).toBeVisible()
+    await expect(getByText('My stop')).toBeVisible()
+    await expect(getByText('My routeMy trip12:05 pm', { exact: true })).toBeVisible()
+  })
+
+  it('only renders departures for configured stops', async () => {
+    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
+      routes: [{ routeId: 'MY_ROUTE', routeShortName: 'My route', routeColor: '111111' }],
+      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' }],
+      stops: [{ stopId: 'STOP_ONE', stopName: 'Stop one' }]
+    }))
+    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
+      entity: [
+        {
+          tripUpdate: {
+            trip: { tripId: 'MY_TRIP' },
+            stopTimeUpdate: [
+              {
+                stopId: 'STOP_ONE',
+                scheduleRelationship: 'SCHEDULED',
+                departure: { time: currentUnixTime + (60 * 5) }
+              },
+              {
+                stopId: 'STOP_TWO',
+                scheduleRelationship: 'SCHEDULED',
+                departure: { time: currentUnixTime + (60 * 6) }
+              }
+            ]
+          }
+        },
+      ]
+    }))
+    configureApp({ stopIds: 'STOP_ONE' })
+    const { getByText } = render(<App />)
+
+    await expect(getByText('My routeMy trip12:05 pm', { exact: true })).toBeVisible()
+    await expect(getByText('My routeMy trip12:06 pm', { exact: true }).query()).toBeNull()
   })
 
   it('prefers departure times but falls back to arrival times', async () => {
@@ -118,12 +152,10 @@ describe('App', () => {
     configureApp({ stopIds: 'MY_STOP' })
     const { getByText } = render(<App />)
 
-    await expect.element(getByText('My routeMy trip12:05 pm', { exact: true })).toBeVisible()
-    await expect.element(getByText('My routeMy trip12:07 pm', { exact: true })).toBeVisible()
-    await expect.element(getByText('My routeMy trip12:08 pm', { exact: true })).toBeVisible()
+    await expect(getByText('My routeMy trip12:05 pm', { exact: true })).toBeVisible()
+    await expect(getByText('My routeMy trip12:07 pm', { exact: true })).toBeVisible()
+    await expect(getByText('My routeMy trip12:08 pm', { exact: true })).toBeVisible()
   })
-
-  it('only renders departures for configured stops')
 
   it('only renders scheduled departures')
 
