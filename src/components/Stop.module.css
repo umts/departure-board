@@ -1,5 +1,11 @@
+.stop-header {
+  margin: 0;
+}
+
 .stop-departures {
   display: grid;
   grid-template-columns: min-content 1fr min-content;
   row-gap: 0.5em;
+  margin: 0;
+  padding: 0;
 }

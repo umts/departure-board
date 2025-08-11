@@ -2,12 +2,12 @@ import classNames from './Stop.module.css'
 
 export default function Stop ({ name, children }) {
   return (
-    <div className={classNames['stop-container']}>
-      <div className={classNames['stop-header']}>
+    <article className={classNames['stop-container']}>
+      <h1 className={classNames['stop-header']}>
         {name}
-      </div>
+      </h1>
       <hr />
-      <div className={classNames['stop-departures']}>{children}</div>
-    </div>
+      <ul className={classNames['stop-departures']}>{children}</ul>
+    </article>
   )
 }
