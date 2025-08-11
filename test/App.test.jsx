@@ -74,4 +74,22 @@ describe('App', () => {
       .filter({ hasText: '12:05 pm' })
     await expect(departure).toBeVisible()
   })
+
+  it('only renders departures for configured stops', async () => {})
+
+  it('only renders scheduled departures', async () => {})
+
+  it('only renders departures in the future', async () => {})
+
+  it('only renders the earliest departures for any given route and shape', async () => {})
+
+  it('always includes departures for shapeless trips', async () => {})
+
+  it('prefers departure times but falls back to arrival times', async () => {})
+
+  it('alternates between absolute and relative time', async () => {})
+
+  it('uses route colors for each departure', async () => {})
+
+  it('handles resize events without error', async () => {})
 })
