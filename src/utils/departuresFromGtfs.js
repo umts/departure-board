@@ -1,5 +1,4 @@
 import { isFuture, fromUnixTime } from 'date-fns'
-/* v8 ignore next */
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
 
 export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopIds) {
@@ -18,7 +17,6 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
 
 function getStopDepartures (gtfsSchedule, gtfsTripUpdates, stopId) {
   const stop = gtfsSchedule.stops.find((stop) => stop.stopId === stopId)
-  /* v8 ignore next */
   if (stop === undefined) return undefined
 
   const STOP_SKIPPED = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.SKIPPED
@@ -33,7 +31,6 @@ function getStopDepartures (gtfsSchedule, gtfsTripUpdates, stopId) {
         stopTimeUpdate.scheduleRelationship !== STOP_SKIPPED &&
         tripUpdate.stopTimeUpdate[tripUpdate.stopTimeUpdate.length - 1] !== stopTimeUpdate
       ) {
-        /* v8 ignore next */
         const departureTime = fromUnixTime((stopTimeUpdate.departure || stopTimeUpdate.arrival).time)
         const trip = gtfsSchedule.trips.find((trip) => trip.tripId === tripUpdate.trip.tripId)
         const shapeId = trip.shapeId
@@ -56,7 +53,9 @@ function getStopDepartures (gtfsSchedule, gtfsTripUpdates, stopId) {
         sortOrder: route.routeSortOrder,
       }
     })
-    .sort((departure1, departure2) => Number(departure1.sortOrder) - Number(departure2.sortOrder))
+    .sort((departure1, departure2) => {
+      return Number(departure1.sortOrder) - Number(departure2.sortOrder)
+    })
 
   return result
 }
