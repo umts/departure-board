@@ -1,6 +1,6 @@
+import { page } from '@vitest/browser/context'
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { render } from 'vitest-browser-react'
 import App from '../src/App.jsx'
 
 const ScheduleRelationship = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship
@@ -35,8 +35,7 @@ describe('App', () => {
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => undefined)
 
     configureApp({ stopIds: 'MY_STOP' })
-    const { container } = render(<App />)
-
+    const { container } = page.render(<App />)
     await expect(container).toBeEmptyDOMElement()
   })
 
@@ -64,9 +63,15 @@ describe('App', () => {
     }))
 
     configureApp({ stopIds: 'MY_STOP' })
-    const { getByRole } = render(<App />)
+    page.render(<App />)
 
-    const departure = getByRole('listitem').filter({ hasText: 'MRMy trip12:05 pm' })
+    const stop = page.getByRole('article').filter({ has: page.getByRole('heading', { text: 'My stop' }) })
+    await expect(stop).toBeVisible()
+
+    const departure = stop.getByRole('listitem')
+      .filter({ hasText: 'MR' })
+      .filter({ hasText: 'My trip' })
+      .filter({ hasText: '12:05 pm' })
     await expect(departure).toBeVisible()
   })
 })
