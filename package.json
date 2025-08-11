@@ -23,7 +23,7 @@
     "vite": "*"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "*",
+    "@vitest/coverage-istanbul": "*",
     "eslint": "*",
     "eslint-plugin-react-hooks": "*",
     "eslint-plugin-react-refresh": "*",
