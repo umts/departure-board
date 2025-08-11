@@ -9,6 +9,10 @@ $border-width: 0.125em;
   align-items: center;
 }
 
+.departure-container {
+  display: contents;
+}
+
 .departure-route {
   @include item;
 
