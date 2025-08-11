@@ -7,7 +7,7 @@ export default function Stop ({ name, children }) {
         {name}
       </h1>
       <hr />
-      <div className={classNames['stop-departures']}>{children}</div>
+      <ul className={classNames['stop-departures']}>{children}</ul>
     </article>
   )
 }
