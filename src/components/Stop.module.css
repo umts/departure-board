@@ -1,3 +1,7 @@
+.stop-header {
+  margin: 0;
+}
+
 .stop-departures {
   display: grid;
   grid-template-columns: min-content 1fr min-content;
