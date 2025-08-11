@@ -12,11 +12,14 @@ export default defineConfig({
       provider: 'playwright',
       headless: true,
       instances: [
-        { browser: 'chromium' }
-      ]
+        { browser: 'chromium' },
+        { browser: 'firefox' },
+        { browser: 'webkit' },
+      ],
     },
     coverage: {
       enabled: true,
+      provider: 'istanbul',
       include: ['src/**/*'],
       exclude: ['src/index.jsx'],
       thresholds: {
