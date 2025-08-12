@@ -87,6 +87,8 @@ describe('App', () => {
 
   it('prefers departure times but falls back to arrival times', async () => {})
 
+  it('sorts departures by time', async () => {})
+
   it('alternates between absolute and relative time', async () => {})
 
   it('uses route colors for each departure', async () => {})
