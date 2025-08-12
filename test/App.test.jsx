@@ -23,6 +23,18 @@ function configureApp ({ stopIds }) {
   history.pushState({}, '', url)
 }
 
+function locateStop (name) {
+  return page.getByRole('article').filter({ has: page.getByRole('heading', { name }) })
+}
+
+function locateDeparture (parent, route, headsign, time) {
+  return parent
+    .getByRole('listitem')
+    .filter({ hasText: route })
+    .filter({ hasText: headsign })
+    .filter({ hasText: time })
+}
+
 describe('App', () => {
   const currentUnixTime = 43200 // 12 pm
 
@@ -65,12 +77,9 @@ describe('App', () => {
     configureApp({ stopIds: 'MY_STOP' })
     page.render(<App />)
 
-    const stop = page.getByRole('article').filter({ has: page.getByRole('heading', { name: 'My stop' }) })
+    const stop = locateStop('My stop')
     await expect(stop).toBeVisible()
-    await expect(
-      stop.getByRole('listitem')
-        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:05 pm' })
-    ).toBeVisible()
+    await expect(locateDeparture(stop, 'MR', 'My trip', '12:05 pm')).toBeVisible()
   })
 
   it('only renders departures for configured stops', async () => {
@@ -113,27 +122,16 @@ describe('App', () => {
     configureApp({ stopIds: 'STOP_TWO,STOP_THREE' })
     page.render(<App />)
 
-    await expect(
-      page.getByRole('article').filter({ has: page.getByRole('heading', { name: 'Stop one' }) }).query()
-    ).toBeNull()
-    await expect(
-      page.getByRole('listitem')
-        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:05 pm' }).query()
-    ).toBeNull()
+    await expect(locateStop('Stop one').query()).toBeNull()
+    await expect(locateDeparture(page, 'MR', 'My trip', '12:05 pm').query()).toBeNull()
 
-    const stopTwo = page.getByRole('article').filter({ has: page.getByRole('heading', { name: 'Stop two' }) })
+    const stopTwo = locateStop('Stop two')
     await expect(stopTwo).toBeVisible()
-    await expect(
-      stopTwo.getByRole('listitem')
-        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:10 pm' })
-    ).toBeVisible()
+    await expect(locateDeparture(stopTwo, 'MR', 'My trip', '12:10 pm')).toBeVisible()
 
-    const stopThree = page.getByRole('article').filter({ has: page.getByRole('heading', { name: 'Stop three' }) })
+    const stopThree = locateStop('Stop three')
     await expect(stopThree).toBeVisible()
-    await expect(
-      stopThree.getByRole('listitem')
-        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:15 pm' })
-    ).toBeVisible()
+    await expect(locateDeparture(stopThree, 'MR', 'My trip', '12:15 pm')).toBeVisible()
   })
 
   it('only renders scheduled departures', async () => {
@@ -200,48 +198,75 @@ describe('App', () => {
     configureApp({ stopIds: 'STOP_ONE,STOP_TWO' })
     page.render(<App />)
 
-    const stopOne = page.getByRole('article').filter({ has: page.getByRole('heading', { name: 'Stop one' }) })
+    const stopOne = locateStop('Stop one')
     await expect(stopOne).toBeVisible()
+    await expect(locateDeparture(page, 'MR', 'My trip', '12:01 pm').query()).toBeNull()
+    await expect(locateDeparture(page, 'MR', 'My trip', '12:02 pm').query()).toBeNull()
+    await expect(locateDeparture(page, 'MR', 'My trip', '12:03 pm').query()).toBeNull()
+    await expect(locateDeparture(stopOne, 'MR', 'My trip', '12:04 pm')).toBeVisible()
 
-    const stopTwo = page.getByRole('article').filter({ has: page.getByRole('heading', { name: 'Stop two' }) })
+    const stopTwo = locateStop('Stop two')
     await expect(stopTwo).toBeVisible()
-
-    await expect(
-      page.getByRole('listitem')
-        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:01 pm' }).query()
-    ).toBeNull()
-    await expect(
-      page.getByRole('listitem')
-        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:02 pm' }).query()
-    ).toBeNull()
-    await expect(
-      page.getByRole('listitem')
-        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:03 pm' }).query()
-    ).toBeNull()
-    await expect(
-      stopOne.getByRole('listitem')
-        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:04 pm' })
-    ).toBeVisible()
-
-    await expect(
-      page.getByRole('listitem')
-        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:05 pm' }).query()
-    ).toBeNull()
-    await expect(
-      page.getByRole('listitem')
-        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:06 pm' }).query()
-    ).toBeNull()
-    await expect(
-      page.getByRole('listitem')
-        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:07 pm' }).query()
-    ).toBeNull()
-    await expect(
-      stopTwo.getByRole('listitem')
-        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:08 pm' })
-    ).toBeVisible()
+    await expect(locateDeparture(page, 'MR', 'My trip', '12:05 pm').query()).toBeNull()
+    await expect(locateDeparture(page, 'MR', 'My trip', '12:06 pm').query()).toBeNull()
+    await expect(locateDeparture(page, 'MR', 'My trip', '12:07 pm').query()).toBeNull()
+    await expect(locateDeparture(stopTwo, 'MR', 'My trip', '12:08 pm')).toBeVisible()
   })
 
-  it('only renders departures in the future', async () => {})
+  it('only renders departures in the future', async () => {
+    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
+      routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
+      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' }],
+      stops: [
+        { stopId: 'STOP_ONE', stopName: 'Stop one' },
+        { stopId: 'STOP_TWO', stopName: 'Stop two' },
+      ],
+    }))
+    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
+      entity: [
+        {
+          tripUpdate: {
+            trip: { tripId: 'MY_TRIP' },
+            stopTimeUpdate: [
+              {
+                stopId: 'STOP_ONE',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime - (60 * 2) }
+              },
+              {
+                stopId: 'STOP_ONE',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime }
+              },
+              {
+                stopId: 'STOP_TWO',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime - (60 * 1) }
+              },
+              {
+                stopId: 'STOP_TWO',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 1) }
+              },
+            ]
+          }
+        },
+      ]
+    }))
+
+    configureApp({ stopIds: 'STOP_ONE,STOP_TWO' })
+    page.render(<App />)
+
+    const stopOne = locateStop('Stop one')
+    await expect(stopOne).toBeVisible()
+    await expect(locateDeparture(page, 'MR', 'My trip', '11:58 am').query()).toBeNull()
+    await expect(locateDeparture(stopOne, 'MR', 'My trip', '12:00 pm')).toBeVisible()
+
+    const stopTwo = locateStop('Stop two')
+    await expect(stopTwo).toBeVisible()
+    await expect(locateDeparture(page, 'MR', 'My trip', '11:59 am').query()).toBeNull()
+    await expect(locateDeparture(stopTwo, 'MR', 'My trip', '12:01 pm')).toBeVisible()
+  })
 
   it('only renders the earliest departures for any given route and shape', async () => {})
 
