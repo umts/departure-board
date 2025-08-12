@@ -85,6 +85,8 @@ describe('App', () => {
 
   it('always includes departures for shapeless trips', async () => {})
 
+  it('gracefully ignores incomplete data', async () => {})
+
   it('prefers departure times but falls back to arrival times', async () => {})
 
   it('sorts departures by time', async () => {})
