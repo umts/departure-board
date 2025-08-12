@@ -1,6 +1,8 @@
 import { isFuture, fromUnixTime } from 'date-fns'
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
 
+const ScheduleRelationship = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship
+
 export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopIds) {
   if (gtfsSchedule?.routes === undefined ||
       gtfsSchedule?.stops === undefined ||
@@ -33,8 +35,8 @@ function getStopDepartures (gtfsSchedule, gtfsTripUpdates, stopId) {
         const departureTime = fromUnixTime((stopTimeUpdate.departure || stopTimeUpdate.arrival).time)
         const trip = gtfsSchedule.trips.find((trip) => trip.tripId === tripUpdate.trip.tripId)
         const shapeId = trip.shapeId
-        if (!shapeId || (!processedShapes.has(shapeId) && isFuture(departureTime))) {
-          if (shapeId) processedShapes.add(shapeId)
+        if (!processedShapes.has(shapeId) && isFuture(departureTime)) {
+          processedShapes.add(shapeId)
           return { departureTime, trip }
         }
       }

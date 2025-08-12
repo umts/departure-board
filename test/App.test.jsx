@@ -42,7 +42,7 @@ describe('App', () => {
   it('renders departures when data has been fetched', async () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
       routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
-      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' }],
+      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' }],
       stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
     }))
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
@@ -82,8 +82,6 @@ describe('App', () => {
   it('only renders departures in the future', async () => {})
 
   it('only renders the earliest departures for any given route and shape', async () => {})
-
-  it('always includes departures for shapeless trips', async () => {})
 
   it('gracefully ignores incomplete data', async () => {})
 
