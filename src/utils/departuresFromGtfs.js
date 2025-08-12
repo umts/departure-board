@@ -18,13 +18,16 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
 
   gtfsTripUpdates.entity.forEach((entity) => {
     const trip = tripsById[entity.tripUpdate.trip.tripId]
+    if (trip === undefined) return
 
     entity.tripUpdate.stopTimeUpdate.forEach((stopTimeUpdate) => {
       if (stopTimeUpdate.scheduleRelationship !== ScheduleRelationship.SCHEDULED) return
 
       const route = routesById[trip.routeId]
+      if (route === undefined) return
 
       const stop = stopsById[stopTimeUpdate.stopId]
+      if (stop === undefined) return
       if (!(stopIds.has(stop.stopId))) return
 
       const time = fromUnixTime((stopTimeUpdate.departure || stopTimeUpdate.arrival).time)
@@ -39,7 +42,7 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
     })
   })
 
-  return [...stopIds].map((stopId) => stopsById[stopId]).map((stop) => ({
+  return [...stopIds].map((stopId) => stopsById[stopId]).filter(Boolean).map((stop) => ({
     id: stop.stopId,
     name: stop.stopName,
     departures: Object.values(uniqueDepartures[stop.stopId] || {})

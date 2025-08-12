@@ -27,12 +27,8 @@ function locateStop (name) {
   return page.getByRole('article').filter({ has: page.getByRole('heading', { name }) })
 }
 
-function locateDeparture (parent, route, headsign, time) {
-  return parent
-    .getByRole('listitem')
-    .filter({ hasText: route })
-    .filter({ hasText: headsign })
-    .filter({ hasText: time })
+function locateDeparture (parent, ...texts) {
+  return texts.reduce((locator, text) => locator.filter({ hasText: text }), parent.getByRole('listitem'))
 }
 
 describe('App', () => {
@@ -345,7 +341,75 @@ describe('App', () => {
     await expect(locateDeparture(stopTwo, 'MR', 'Trip two', '12:06 pm')).toBeVisible()
   })
 
-  it('gracefully ignores incomplete data', async () => {})
+  it('gracefully ignores incomplete data', async () => {
+    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
+      routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
+      trips: [
+        { tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' },
+        { tripId: 'NO_ROUTE_TRIP', routeId: 'NO_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'No route trip' },
+        { tripId: 'NO_SHAPE_TRIP', routeId: 'NO_ROUTE', tripHeadsign: 'No shape trip' },
+      ],
+      stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
+    }))
+    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
+      entity: [
+        {
+          tripUpdate: {
+            trip: { tripId: 'NO_TRIP' },
+            stopTimeUpdate: [
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 5) }
+              }
+            ]
+          }
+        },
+        {
+          tripUpdate: {
+            trip: { tripId: 'NO_ROUTE_TRIP' },
+            stopTimeUpdate: [
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 5) }
+              }
+            ]
+          }
+        },
+        {
+          tripUpdate: {
+            trip: { tripId: 'NO_SHAPE_TRIP' },
+            stopTimeUpdate: [
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 5) }
+              }
+            ]
+          }
+        },
+        {
+          tripUpdate: {
+            trip: { tripId: 'MY_TRIP' },
+            stopTimeUpdate: [
+              {
+                stopId: 'NO_STOP',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 5) }
+              }
+            ]
+          }
+        },
+      ]
+    }))
+
+    configureApp({ stopIds: 'MY_STOP,NO_STOP' })
+    page.render(<App />)
+
+    await expect(locateStop('My stop')).toBeVisible()
+    await expect(locateDeparture(page, '12:05 pm').query()).toBeNull()
+  })
 
   it('prefers departure times but falls back to arrival times', async () => {})
 
