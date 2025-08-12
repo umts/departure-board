@@ -136,7 +136,110 @@ describe('App', () => {
     ).toBeVisible()
   })
 
-  it('only renders scheduled departures', async () => {})
+  it('only renders scheduled departures', async () => {
+    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
+      routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
+      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' }],
+      stops: [
+        { stopId: 'STOP_ONE', stopName: 'Stop one' },
+        { stopId: 'STOP_TWO', stopName: 'Stop two' },
+      ],
+    }))
+    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
+      entity: [
+        {
+          tripUpdate: {
+            trip: { tripId: 'MY_TRIP' },
+            stopTimeUpdate: [
+              {
+                stopId: 'STOP_ONE',
+                scheduleRelationship: ScheduleRelationship.SKIPPED,
+                departure: { time: currentUnixTime + (60 * 1) }
+              },
+              {
+                stopId: 'STOP_ONE',
+                scheduleRelationship: ScheduleRelationship.NO_DATA,
+                departure: { time: currentUnixTime + (60 * 2) }
+              },
+              {
+                stopId: 'STOP_ONE',
+                scheduleRelationship: ScheduleRelationship.UNSCHEDULED,
+                departure: { time: currentUnixTime + (60 * 3) }
+              },
+              {
+                stopId: 'STOP_ONE',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 4) }
+              },
+              {
+                stopId: 'STOP_TWO',
+                scheduleRelationship: ScheduleRelationship.SKIPPED,
+                departure: { time: currentUnixTime + (60 * 5) }
+              },
+              {
+                stopId: 'STOP_TWO',
+                scheduleRelationship: ScheduleRelationship.NO_DATA,
+                departure: { time: currentUnixTime + (60 * 6) }
+              },
+              {
+                stopId: 'STOP_TWO',
+                scheduleRelationship: ScheduleRelationship.UNSCHEDULED,
+                departure: { time: currentUnixTime + (60 * 7) }
+              },
+              {
+                stopId: 'STOP_TWO',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 8) }
+              },
+            ]
+          }
+        },
+      ]
+    }))
+
+    configureApp({ stopIds: 'STOP_ONE,STOP_TWO' })
+    page.render(<App />)
+
+    const stopOne = page.getByRole('article').filter({ has: page.getByRole('heading', { name: 'Stop one' }) })
+    await expect(stopOne).toBeVisible()
+
+    const stopTwo = page.getByRole('article').filter({ has: page.getByRole('heading', { name: 'Stop two' }) })
+    await expect(stopTwo).toBeVisible()
+
+    await expect(
+      page.getByRole('listitem')
+        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:01 pm' }).query()
+    ).toBeNull()
+    await expect(
+      page.getByRole('listitem')
+        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:02 pm' }).query()
+    ).toBeNull()
+    await expect(
+      page.getByRole('listitem')
+        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:03 pm' }).query()
+    ).toBeNull()
+    await expect(
+      stopOne.getByRole('listitem')
+        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:04 pm' })
+    ).toBeVisible()
+
+    await expect(
+      page.getByRole('listitem')
+        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:05 pm' }).query()
+    ).toBeNull()
+    await expect(
+      page.getByRole('listitem')
+        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:06 pm' }).query()
+    ).toBeNull()
+    await expect(
+      page.getByRole('listitem')
+        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:07 pm' }).query()
+    ).toBeNull()
+    await expect(
+      stopTwo.getByRole('listitem')
+        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:08 pm' })
+    ).toBeVisible()
+  })
 
   it('only renders departures in the future', async () => {})
 

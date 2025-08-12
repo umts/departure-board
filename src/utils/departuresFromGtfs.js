@@ -1,4 +1,4 @@
-import { isFuture, fromUnixTime } from 'date-fns'
+import { fromUnixTime } from 'date-fns'
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
 
 export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopIds) {
@@ -9,52 +9,40 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
     return undefined
   }
 
-  stopIds = [...new Set(stopIds)]
-  return stopIds
-    .map((stopId) => getStopDepartures(gtfsSchedule, gtfsTripUpdates, stopId))
-    .filter((departures) => !!departures)
+  const routesById = buildIndex(gtfsSchedule.routes, (route) => route.routeId)
+  const stopsById = buildIndex(gtfsSchedule.stops, (stop) => stop.stopId)
+  const tripsById = buildIndex(gtfsSchedule.trips, (trip) => trip.tripId)
+
+  const departuresByStop = {}
+  stopIds.forEach((stopId) => {
+    const stop = stopsById[stopId]
+    if (stop) departuresByStop[stop.stopId] = { id: stop.stopId, name: stop.stopName, departures: [] }
+  })
+
+  gtfsTripUpdates.entity.forEach((entity) => {
+    const trip = tripsById[entity.tripUpdate.trip.tripId]
+    entity.tripUpdate.stopTimeUpdate.forEach((stopTimeUpdate) => {
+      const stop = stopsById[stopTimeUpdate.stopId]
+      const route = routesById[trip.routeId]
+
+      if (stopTimeUpdate.scheduleRelationship !== ScheduleRelationship.SCHEDULED) return
+      if (!(stop.stopId in departuresByStop)) return
+
+      departuresByStop[stop.stopId].departures.push({
+        id: trip.tripId,
+        destination: trip.tripHeadsign,
+        route: routesById[tripsById[trip.tripId].routeId].routeShortName,
+        time: fromUnixTime((stopTimeUpdate.departure || stopTimeUpdate.arrival).time),
+        color: `#${route.routeColor}`,
+      })
+    })
+  })
+
+  return Object.values(departuresByStop)
 }
 
-function getStopDepartures (gtfsSchedule, gtfsTripUpdates, stopId) {
-  const stop = gtfsSchedule.stops.find((stop) => stop.stopId === stopId)
-  if (stop === undefined) return undefined
-
-  const STOP_SKIPPED = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.SKIPPED
-  const processedShapes = new Set()
-  const result = { id: stop.stopId, name: stop.stopName }
-  result.departures = gtfsTripUpdates.entity
-    .map((entity) => entity.tripUpdate)
-    .map((tripUpdate) => {
-      const stopTimeUpdate = tripUpdate.stopTimeUpdate.find((stopTimeUpdate) => stopTimeUpdate.stopId === stopId)
-      if (
-        stopTimeUpdate &&
-        stopTimeUpdate.scheduleRelationship !== STOP_SKIPPED
-      ) {
-        const departureTime = fromUnixTime((stopTimeUpdate.departure || stopTimeUpdate.arrival).time)
-        const trip = gtfsSchedule.trips.find((trip) => trip.tripId === tripUpdate.trip.tripId)
-        const shapeId = trip.shapeId
-        if (!processedShapes.has(shapeId) && isFuture(departureTime)) {
-          processedShapes.add(shapeId)
-          return { departureTime, trip }
-        }
-      }
-      return undefined
-    })
-    .filter((departure) => !!departure)
-    .map((departure) => {
-      const route = gtfsSchedule.routes.find((route) => route.routeId === departure.trip.routeId)
-      return {
-        id: departure.trip.tripId,
-        destination: departure.trip.tripHeadsign,
-        route: route.routeShortName,
-        time: departure.departureTime,
-        color: `#${route.routeColor}`,
-        sortOrder: route.routeSortOrder,
-      }
-    })
-    .sort((departure1, departure2) => {
-      return Number(departure1.sortOrder) - Number(departure2.sortOrder)
-    })
-
-  return result
+function buildIndex (collection, computeKey) {
+  const index = {}
+  collection.forEach((item) => { index[computeKey(item)] ??= item })
+  return index
 }
