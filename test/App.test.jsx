@@ -65,17 +65,76 @@ describe('App', () => {
     configureApp({ stopIds: 'MY_STOP' })
     page.render(<App />)
 
-    const stop = page.getByRole('article').filter({ has: page.getByRole('heading', { text: 'My stop' }) })
+    const stop = page.getByRole('article').filter({ has: page.getByRole('heading', { name: 'My stop' }) })
     await expect(stop).toBeVisible()
-
-    const departure = stop.getByRole('listitem')
-      .filter({ hasText: 'MR' })
-      .filter({ hasText: 'My trip' })
-      .filter({ hasText: '12:05 pm' })
-    await expect(departure).toBeVisible()
+    await expect(
+      stop.getByRole('listitem')
+        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:05 pm' })
+    ).toBeVisible()
   })
 
-  it('only renders departures for configured stops', async () => {})
+  it('only renders departures for configured stops', async () => {
+    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
+      routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
+      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' }],
+      stops: [
+        { stopId: 'STOP_ONE', stopName: 'Stop one' },
+        { stopId: 'STOP_TWO', stopName: 'Stop two' },
+        { stopId: 'STOP_THREE', stopName: 'Stop three' },
+      ],
+    }))
+    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
+      entity: [
+        {
+          tripUpdate: {
+            trip: { tripId: 'MY_TRIP' },
+            stopTimeUpdate: [
+              {
+                stopId: 'STOP_ONE',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 5) }
+              },
+              {
+                stopId: 'STOP_TWO',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 10) }
+              },
+              {
+                stopId: 'STOP_THREE',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 15) }
+              }
+            ]
+          }
+        },
+      ]
+    }))
+
+    configureApp({ stopIds: 'STOP_TWO,STOP_THREE' })
+    page.render(<App />)
+
+    await expect(
+      page.getByRole('article').filter({ has: page.getByRole('heading', { name: 'Stop one' }) }).query()
+    ).toBeNull()
+    await expect(
+      page.getByRole('listitem')
+        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:05 pm' }).query()
+    ).toBeNull()
+
+    const stopTwo = page.getByRole('article').filter({ has: page.getByRole('heading', { name: 'Stop two' }) })
+    await expect(stopTwo).toBeVisible()
+    await expect(
+      stopTwo.getByRole('listitem')
+        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:10 pm' })
+    ).toBeVisible()
+
+    const stopThree = page.getByRole('article').filter({ has: page.getByRole('heading', { name: 'Stop three' }) })
+    await expect(stopThree).toBeVisible()
+    await expect(
+      stopThree.getByRole('listitem')
+        .filter({ hasText: 'MR' }).filter({ hasText: 'My trip' }).filter({ hasText: '12:15 pm' })
+    ).toBeVisible()
+  })
 
   it('only renders scheduled departures', async () => {})
 
