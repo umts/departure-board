@@ -268,7 +268,82 @@ describe('App', () => {
     await expect(locateDeparture(stopTwo, 'MR', 'My trip', '12:01 pm')).toBeVisible()
   })
 
-  it('only renders the earliest departures for any given route and shape', async () => {})
+  it('only renders the earliest departures for any given route and shape', async () => {
+    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
+      routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
+      trips: [
+        { tripId: 'TRIP_ONE', routeId: 'MY_ROUTE', shapeId: 'SHAPE_ONE', tripHeadsign: 'Trip one' },
+        { tripId: 'TRIP_TWO', routeId: 'MY_ROUTE', shapeId: 'SHAPE_TWO', tripHeadsign: 'Trip two' }
+      ],
+      stops: [
+        { stopId: 'STOP_ONE', stopName: 'Stop one' },
+        { stopId: 'STOP_TWO', stopName: 'Stop two' },
+      ],
+    }))
+    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
+      entity: [
+        {
+          tripUpdate: {
+            trip: { tripId: 'TRIP_ONE' },
+            stopTimeUpdate: [
+              {
+                stopId: 'STOP_ONE',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 3) }
+              },
+              {
+                stopId: 'STOP_TWO',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 4) }
+              },
+              {
+                stopId: 'STOP_ONE',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 1) }
+              },
+              {
+                stopId: 'STOP_TWO',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 2) }
+              },
+            ]
+          }
+        },
+        {
+          tripUpdate: {
+            trip: { tripId: 'TRIP_TWO' },
+            stopTimeUpdate: [
+              {
+                stopId: 'STOP_ONE',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 5) }
+              },
+              {
+                stopId: 'STOP_TWO',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 6) }
+              },
+            ]
+          }
+        },
+      ]
+    }))
+
+    configureApp({ stopIds: 'STOP_ONE,STOP_TWO' })
+    page.render(<App />)
+
+    const stopOne = locateStop('Stop one')
+    await expect(stopOne).toBeVisible()
+    await expect(locateDeparture(stopOne, 'MR', 'Trip one', '12:01 pm')).toBeVisible()
+    await expect(locateDeparture(page, 'MR', 'Trip one', '12:03 pm').query()).toBeNull()
+    await expect(locateDeparture(stopOne, 'MR', 'Trip two', '12:05 pm')).toBeVisible()
+
+    const stopTwo = locateStop('Stop two')
+    await expect(stopTwo).toBeVisible()
+    await expect(locateDeparture(stopTwo, 'MR', 'Trip one', '12:02 pm')).toBeVisible()
+    await expect(locateDeparture(page, 'MR', 'Trip one', '12:04 am').query()).toBeNull()
+    await expect(locateDeparture(stopTwo, 'MR', 'Trip two', '12:06 pm')).toBeVisible()
+  })
 
   it('gracefully ignores incomplete data', async () => {})
 

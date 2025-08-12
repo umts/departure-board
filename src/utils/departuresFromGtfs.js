@@ -12,37 +12,46 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
   const routesById = buildIndex(gtfsSchedule.routes, (route) => route.routeId)
   const stopsById = buildIndex(gtfsSchedule.stops, (stop) => stop.stopId)
   const tripsById = buildIndex(gtfsSchedule.trips, (trip) => trip.tripId)
+  stopIds = new Set(stopIds)
 
-  const departuresByStop = {}
-  stopIds.forEach((stopId) => {
-    const stop = stopsById[stopId]
-    if (stop) departuresByStop[stop.stopId] = { id: stop.stopId, name: stop.stopName, departures: [] }
-  })
+  const uniqueDepartures = {}
 
   gtfsTripUpdates.entity.forEach((entity) => {
     const trip = tripsById[entity.tripUpdate.trip.tripId]
+
     entity.tripUpdate.stopTimeUpdate.forEach((stopTimeUpdate) => {
       if (stopTimeUpdate.scheduleRelationship !== ScheduleRelationship.SCHEDULED) return
 
       const route = routesById[trip.routeId]
 
       const stop = stopsById[stopTimeUpdate.stopId]
-      if (!(stop.stopId in departuresByStop)) return
+      if (!(stopIds.has(stop.stopId))) return
 
       const time = fromUnixTime((stopTimeUpdate.departure || stopTimeUpdate.arrival).time)
       if (isPast(time)) return
 
-      departuresByStop[stop.stopId].departures.push({
-        id: trip.tripId,
-        destination: trip.tripHeadsign,
-        route: routesById[tripsById[trip.tripId].routeId].routeShortName,
-        time,
-        color: `#${route.routeColor}`,
-      })
+      uniqueDepartures[stop.stopId] ??= {}
+      uniqueDepartures[stop.stopId][route.routeId] ??= {}
+      const previousDeparture = uniqueDepartures[stop.stopId][route.routeId][trip.shapeId]
+      if (previousDeparture === undefined || previousDeparture.time > time) {
+        uniqueDepartures[stop.stopId][route.routeId][trip.shapeId] = { tripId: trip.tripId, time }
+      }
     })
   })
 
-  return Object.values(departuresByStop)
+  return [...stopIds].map((stopId) => stopsById[stopId]).map((stop) => ({
+    id: stop.stopId,
+    name: stop.stopName,
+    departures: Object.values(uniqueDepartures[stop.stopId] || {})
+      .flatMap((byShape) => Object.values(byShape))
+      .map(({ tripId, time }) => ({
+        id: tripId,
+        destination: tripsById[tripId].tripHeadsign,
+        route: routesById[tripsById[tripId].routeId].routeShortName,
+        time,
+        color: `#${routesById[tripsById[tripId].routeId].routeColor}`
+      }))
+  }))
 }
 
 function buildIndex (collection, computeKey) {
