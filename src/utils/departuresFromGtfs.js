@@ -11,8 +11,6 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
     return undefined
   }
 
-  console.log('new departures')
-
   const routesById = buildIndex(gtfsSchedule.routes, (route) => route.routeId)
   const stopsById = buildIndex(gtfsSchedule.stops, (stop) => stop.stopId)
   const tripsById = buildIndex(gtfsSchedule.trips, (trip) => trip.tripId)

@@ -302,6 +302,16 @@ describe('App', () => {
                 scheduleRelationship: ScheduleRelationship.SCHEDULED,
                 departure: { time: currentUnixTime + (60 * 2) }
               },
+              {
+                stopId: 'STOP_ONE',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 7) }
+              },
+              {
+                stopId: 'STOP_TWO',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 8) }
+              },
             ]
           }
         },
