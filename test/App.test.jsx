@@ -411,7 +411,67 @@ describe('App', () => {
     await expect(locateDeparture(page, '12:05 pm').query()).toBeNull()
   })
 
-  it('prefers departure times but falls back to arrival times', async () => {})
+  it('prefers departure times but falls back to arrival times', async () => {
+    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
+      routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
+      trips: [
+        { tripId: 'TRIP_ONE', routeId: 'MY_ROUTE', shapeId: 'SHAPE_ONE', tripHeadsign: 'Trip one' },
+        { tripId: 'TRIP_TWO', routeId: 'MY_ROUTE', shapeId: 'SHAPE_TWO', tripHeadsign: 'Trip two' },
+        { tripId: 'TRIP_THREE', routeId: 'MY_ROUTE', shapeId: 'SHAPE_THREE', tripHeadsign: 'Trip three' }
+      ],
+      stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
+    }))
+    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
+      entity: [
+        {
+          tripUpdate: {
+            trip: { tripId: 'TRIP_ONE' },
+            stopTimeUpdate: [
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 5) }
+              }
+            ]
+          }
+        },
+        {
+          tripUpdate: {
+            trip: { tripId: 'TRIP_TWO' },
+            stopTimeUpdate: [
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                arrival: { time: currentUnixTime + (60 * 7) },
+                departure: { time: currentUnixTime + (60 * 6) },
+              }
+            ]
+          }
+        },
+        {
+          tripUpdate: {
+            trip: { tripId: 'TRIP_THREE' },
+            stopTimeUpdate: [
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                arrival: { time: currentUnixTime + (60 * 8) },
+              }
+            ]
+          }
+        },
+      ]
+    }))
+
+    configureApp({ stopIds: 'MY_STOP' })
+    page.render(<App />)
+
+    const stop = locateStop('My stop')
+    await expect(stop).toBeVisible()
+    await expect(locateDeparture(stop, 'MR', 'Trip one', '12:05 pm')).toBeVisible()
+    await expect(locateDeparture(stop, 'MR', 'Trip two', '12:06 pm')).toBeVisible()
+    await expect(locateDeparture(stop, 'MR', 'Trip three', '12:08 pm')).toBeVisible()
+  })
 
   it('sorts departures by time', async () => {})
 
