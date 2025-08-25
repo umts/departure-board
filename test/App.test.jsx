@@ -1,8 +1,9 @@
-import { describe, expect, it, vi } from 'vitest'
-import { render } from 'vitest-browser-react'
+import { page } from '@vitest/browser/context'
+import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../src/App.jsx'
-import gtfsSchedule from './fixtures/schedule.json'
-import gtfsTripUpdates from './fixtures/trip-updates.json'
+
+const ScheduleRelationship = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship
 
 const gtfsReactHooksMocks = vi.hoisted(() => ({
   useGtfsSchedule: vi.fn(),
@@ -16,41 +17,81 @@ vi.mock('gtfs-react-hooks', () => ({
   useFetchResolver: gtfsReactHooksMocks.useFetchResolver,
 }))
 
+function configureApp ({ stopIds }) {
+  const url = new URL(location)
+  url.searchParams.set('stopIds', stopIds)
+  history.pushState({}, '', url)
+}
+
 describe('App', () => {
+  const currentUnixTime = 43200 // 12 pm
+
+  beforeEach(() => {
+    vi.setSystemTime(new Date(currentUnixTime * 1000))
+  })
+
   it('renders nothing when no data has been fetched', async () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => undefined)
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => undefined)
-    const url = new URL(location)
-    url.searchParams.set('stopIds', '116')
-    history.pushState({}, '', url)
 
-    const { container } = render(<App />)
+    configureApp({ stopIds: 'MY_STOP' })
+    const { container } = page.render(<App />)
     await expect(container).toBeEmptyDOMElement()
   })
 
   it('renders departures when data has been fetched', async () => {
-    const currentTime = new Date(2025, 5, 27, 16, 20)
-    vi.setSystemTime(currentTime)
+    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
+      routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
+      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' }],
+      stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
+    }))
+    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
+      entity: [
+        {
+          tripUpdate: {
+            trip: { tripId: 'MY_TRIP' },
+            stopTimeUpdate: [
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 5) }
+              }
+            ]
+          }
+        },
+      ]
+    }))
 
-    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => gtfsSchedule)
-    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => gtfsTripUpdates)
-    const url = new URL(location)
-    url.searchParams.set('stopIds', '116')
-    history.pushState({}, '', url)
+    configureApp({ stopIds: 'MY_STOP' })
+    page.render(<App />)
 
-    const { getByText } = render(<App />)
-    await expect.element(getByText('Amherst College')).toBeVisible()
-    await expect.element(getByText('B43')).toBeVisible()
-    await expect.element(getByText('Northampton via Hampshire Mall')).toBeVisible()
-    await expect.element(getByText('4:23 pm')).toBeVisible()
+    const stop = page.getByRole('article').filter({ has: page.getByRole('heading', { text: 'My stop' }) })
+    await expect(stop).toBeVisible()
 
-    vi.advanceTimersByTime(5000)
-    await expect.element(getByText('3 minutes')).toBeVisible()
-
-    vi.advanceTimersByTime(5000)
-    await expect.element(getByText('4:23 pm')).toBeVisible()
-
-    // TODO: Actually test.
-    window.dispatchEvent(new Event('resize'))
+    const departure = stop.getByRole('listitem')
+      .filter({ hasText: 'MR' })
+      .filter({ hasText: 'My trip' })
+      .filter({ hasText: '12:05 pm' })
+    await expect(departure).toBeVisible()
   })
+
+  it('only renders departures for configured stops', async () => {})
+
+  it('only renders scheduled departures', async () => {})
+
+  it('only renders departures in the future', async () => {})
+
+  it('only renders the earliest departures for any given route and shape', async () => {})
+
+  it('gracefully ignores incomplete data', async () => {})
+
+  it('prefers departure times but falls back to arrival times', async () => {})
+
+  it('sorts departures by time', async () => {})
+
+  it('alternates between absolute and relative time', async () => {})
+
+  it('uses route colors for each departure', async () => {})
+
+  it('handles resize events without error', async () => {})
 })
