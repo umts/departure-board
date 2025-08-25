@@ -4,14 +4,7 @@ TODO: Describe.
 
 ## Usage
 
-You can provide the desired stop IDs to display either with the `stopIds` query parameter in the url...
-```
-localhost:5173/?stopIds=64,117
-```
-...or by setting the `VITE_STOP_IDS` environment variable when running the development server.
-```sh
-VITE_STOP_IDS=64,117 npm run dev
-```
+TODO: Describe
 
 ## Development
 
