@@ -4,7 +4,7 @@ TODO: Describe.
 
 ## Usage
 
-TODO: Describe
+TODO: Describe.
 
 ## Development
 
