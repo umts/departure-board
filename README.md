@@ -14,6 +14,15 @@ through [`node.js`][nodejs] + [`npm`][npm]. It is recommended that you use
 
 It is entirely clientside and data is fetched remotely from GTFS feeds.
 
+Vite will set any environment variables provided in a `.env` or `.env.local` file when launching the development server.
+We recommend setting some stops in `.env.local` using `VITE_STOP_IDS` when developing
+to monitor your changes (and so you don't have to memorize these stop IDs).
+Here are a few interesting PVTA stop IDs to look at:
+
+- `64` - UMass Integrative Learning Center generally always has multiple busses stopping at it
+- `116` - Amherst College's stop is an end of the B43
+- `1620` - Memorial / Heywood sits right before the R14 branches into several routes with different destinations
+
 ### Requirements
 
 - `node.js`/`npm` matching the version in the `.node-version` file (just run `nodenv install` if using nodenv)
