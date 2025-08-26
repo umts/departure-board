@@ -6,6 +6,7 @@ const ScheduleRelationship = GtfsRealtimeBindings.transit_realtime.TripUpdate.St
 export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopIds) {
   if (gtfsSchedule?.routes === undefined ||
       gtfsSchedule?.stops === undefined ||
+      gtfsSchedule?.stopTimes === undefined ||
       gtfsSchedule?.trips === undefined ||
       gtfsTripUpdates === undefined) {
     return undefined
@@ -14,9 +15,14 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
   const routesById = buildIndex(gtfsSchedule.routes, (route) => route.routeId)
   const stopsById = buildIndex(gtfsSchedule.stops, (stop) => stop.stopId)
   const tripsById = buildIndex(gtfsSchedule.trips, (trip) => trip.tripId)
+  const stopTimesByTripId = gtfsSchedule.stopTimes.reduce((map, current) => {
+    map[current.tripId] ??= []
+    map[current.tripId].push(current)
+    return map
+  })
 
   const stops = [...new Set(stopIds)].map((stopId) => stopsById[stopId]).filter(Boolean)
-  const updates = earliestStopTimeUpdates(gtfsTripUpdates.entity.map((entity) => entity.tripUpdate), tripsById)
+  const updates = earliestStopTimeUpdates(gtfsTripUpdates.entity.map((entity) => entity.tripUpdate), tripsById, stopTimesByTripId)
 
   const departures = []
   stops.forEach((stop) => {
@@ -47,7 +53,7 @@ function buildIndex (collection, computeKey) {
   return index
 }
 
-function earliestStopTimeUpdates (tripUpdates, tripsById) {
+function earliestStopTimeUpdates (tripUpdates, tripsById, stopTimesByTripId) {
   const stopTimeUpdates = {}
   tripUpdates.forEach((tripUpdate) => {
     const trip = tripsById[tripUpdate.trip.tripId]
@@ -63,6 +69,7 @@ function earliestStopTimeUpdates (tripUpdates, tripsById) {
       const time = fromUnixTime((stopTimeUpdate.departure || stopTimeUpdate.arrival).time)
 
       if (isPast(time)) return
+      if (isLastStopInTrip(tripId, stopId, stopTimesByTripId)) return
 
       stopTimeUpdates[stopId] ??= {}
       stopTimeUpdates[stopId][routeId] ??= {}
@@ -81,4 +88,11 @@ function earliestStopTimeUpdates (tripUpdates, tripsById) {
     })
   })
   return departures
+}
+
+function isLastStopInTrip (tripId, stopId, stopTimesByTripId) {
+  const lastStopId = stopTimesByTripId[tripId].reduce((target, current) => {
+    return Number(target.stopSequence) > Number(current.stopSequence) ? target : current
+  }).stopId
+  return lastStopId === stopId
 }
