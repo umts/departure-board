@@ -1,32 +1,11 @@
 name: ci
+permissions:
+  contents: read
 on:
   pull_request:
   push:
     branches:
       - main
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - run: npm run build
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - run: npm run lint
-  lint-css:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - run: npm run lint:css
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - run: npx playwright install --with-deps
-      - run: npm run test
+  vite:
+    uses: umts/.github/.github/workflows/integrate-vite-app.yml@main
