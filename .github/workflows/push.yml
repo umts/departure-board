@@ -1,4 +1,4 @@
-name: cd
+name: push
 permissions:
   contents: read
 on:
@@ -6,7 +6,10 @@ on:
     branches:
       - main
 jobs:
-  vite:
+  integrate:
+    uses: umts/.github/.github/workflows/integrate-vite-app.yml@main
+  deploy:
+    needs: integrate
     permissions:
       pages: write
       id-token: write

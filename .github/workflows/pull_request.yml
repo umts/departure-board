@@ -1,11 +1,8 @@
-name: ci
+name: pull_request
 permissions:
   contents: read
 on:
   pull_request:
-  push:
-    branches:
-      - main
 jobs:
-  vite:
+  integrate:
     uses: umts/.github/.github/workflows/integrate-vite-app.yml@main
