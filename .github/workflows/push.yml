@@ -1,0 +1,16 @@
+name: push
+permissions:
+  contents: read
+on:
+  push:
+    branches:
+      - main
+jobs:
+  integrate:
+    uses: umts/.github/.github/workflows/integrate-vite-app.yml@main
+  deploy:
+    needs: integrate
+    permissions:
+      pages: write
+      id-token: write
+    uses: umts/.github/.github/workflows/deploy-vite-app.yml@main

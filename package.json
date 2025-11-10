@@ -6,7 +6,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "lint": "eslint",
+    "lint": "eslint .",
     "lint:css": "stylelint **/*.css **/*.module.css **/*.scss **/*.module.scss",
     "preview": "vite preview",
     "test": "vitest run"
