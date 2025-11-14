@@ -40,7 +40,7 @@ describe('App', () => {
     vi.setSystemTime(new Date(currentUnixTime * 1000))
   })
 
-  afterEach(async () => {
+  afterEach(() => {
     vi.useRealTimers()
     vi.resetAllMocks()
   })
@@ -51,7 +51,7 @@ describe('App', () => {
 
     configureApp({ stopIds: 'MY_STOP' })
     await page.render(<App />)
-    await expect(page.getByRole('article')).not.toBeInTheDocument()
+    await expect.element(page.getByRole('article')).not.toBeInTheDocument()
   })
 
   it('renders departures when data has been fetched', async () => {
@@ -81,8 +81,8 @@ describe('App', () => {
     await page.render(<App />)
 
     const stop = locateStop('My stop')
-    await expect(stop).toBeVisible()
-    await expect(locateDeparture(stop, 'MR', 'My trip', '12:05 pm')).toBeVisible()
+    await expect.element(stop).toBeVisible()
+    await expect.element(locateDeparture(stop, 'MR', 'My trip', '12:05 pm')).toBeVisible()
   })
 
   it('only renders departures for configured stops', async () => {
@@ -125,16 +125,16 @@ describe('App', () => {
     configureApp({ stopIds: 'STOP_TWO,STOP_THREE' })
     await page.render(<App />)
 
-    await expect(locateStop('Stop one')).not.toBeInTheDocument()
-    await expect(locateDeparture(page, 'MR', 'My trip', '12:05 pm')).not.toBeInTheDocument()
+    await expect.element(locateStop('Stop one')).not.toBeInTheDocument()
+    await expect.element(locateDeparture(page, 'MR', 'My trip', '12:05 pm')).not.toBeInTheDocument()
 
     const stopTwo = locateStop('Stop two')
-    await expect(stopTwo).toBeVisible()
-    await expect(locateDeparture(stopTwo, 'MR', 'My trip', '12:10 pm')).toBeVisible()
+    await expect.element(stopTwo).toBeVisible()
+    await expect.element(locateDeparture(stopTwo, 'MR', 'My trip', '12:10 pm')).toBeVisible()
 
     const stopThree = locateStop('Stop three')
-    await expect(stopThree).toBeVisible()
-    await expect(locateDeparture(stopThree, 'MR', 'My trip', '12:15 pm')).toBeVisible()
+    await expect.element(stopThree).toBeVisible()
+    await expect.element(locateDeparture(stopThree, 'MR', 'My trip', '12:15 pm')).toBeVisible()
   })
 
   it('only renders scheduled departures', async () => {
@@ -202,18 +202,18 @@ describe('App', () => {
     await page.render(<App />)
 
     const stopOne = locateStop('Stop one')
-    await expect(stopOne).toBeVisible()
-    await expect(locateDeparture(page, 'MR', 'My trip', '12:01 pm')).not.toBeInTheDocument()
-    await expect(locateDeparture(page, 'MR', 'My trip', '12:02 pm')).not.toBeInTheDocument()
-    await expect(locateDeparture(page, 'MR', 'My trip', '12:03 pm')).not.toBeInTheDocument()
-    await expect(locateDeparture(stopOne, 'MR', 'My trip', '12:04 pm')).toBeVisible()
+    await expect.element(stopOne).toBeVisible()
+    await expect.element(locateDeparture(page, 'MR', 'My trip', '12:01 pm')).not.toBeInTheDocument()
+    await expect.element(locateDeparture(page, 'MR', 'My trip', '12:02 pm')).not.toBeInTheDocument()
+    await expect.element(locateDeparture(page, 'MR', 'My trip', '12:03 pm')).not.toBeInTheDocument()
+    await expect.element(locateDeparture(stopOne, 'MR', 'My trip', '12:04 pm')).toBeVisible()
 
     const stopTwo = locateStop('Stop two')
-    await expect(stopTwo).toBeVisible()
-    await expect(locateDeparture(page, 'MR', 'My trip', '12:05 pm')).not.toBeInTheDocument()
-    await expect(locateDeparture(page, 'MR', 'My trip', '12:06 pm')).not.toBeInTheDocument()
-    await expect(locateDeparture(page, 'MR', 'My trip', '12:07 pm')).not.toBeInTheDocument()
-    await expect(locateDeparture(stopTwo, 'MR', 'My trip', '12:08 pm')).toBeVisible()
+    await expect.element(stopTwo).toBeVisible()
+    await expect.element(locateDeparture(page, 'MR', 'My trip', '12:05 pm')).not.toBeInTheDocument()
+    await expect.element(locateDeparture(page, 'MR', 'My trip', '12:06 pm')).not.toBeInTheDocument()
+    await expect.element(locateDeparture(page, 'MR', 'My trip', '12:07 pm')).not.toBeInTheDocument()
+    await expect.element(locateDeparture(stopTwo, 'MR', 'My trip', '12:08 pm')).toBeVisible()
   })
 
   it('only renders departures in the future', async () => {
@@ -261,14 +261,14 @@ describe('App', () => {
     await page.render(<App />)
 
     const stopOne = locateStop('Stop one')
-    await expect(stopOne).toBeVisible()
-    await expect(locateDeparture(page, 'MR', 'My trip', '11:58 am')).not.toBeInTheDocument()
-    await expect(locateDeparture(stopOne, 'MR', 'My trip', '12:00 pm')).toBeVisible()
+    await expect.element(stopOne).toBeVisible()
+    await expect.element(locateDeparture(page, 'MR', 'My trip', '11:58 am')).not.toBeInTheDocument()
+    await expect.element(locateDeparture(stopOne, 'MR', 'My trip', '12:00 pm')).toBeVisible()
 
     const stopTwo = locateStop('Stop two')
-    await expect(stopTwo).toBeVisible()
-    await expect(locateDeparture(page, 'MR', 'My trip', '11:59 am')).not.toBeInTheDocument()
-    await expect(locateDeparture(stopTwo, 'MR', 'My trip', '12:01 pm')).toBeVisible()
+    await expect.element(stopTwo).toBeVisible()
+    await expect.element(locateDeparture(page, 'MR', 'My trip', '11:59 am')).not.toBeInTheDocument()
+    await expect.element(locateDeparture(stopTwo, 'MR', 'My trip', '12:01 pm')).toBeVisible()
   })
 
   it('only renders the earliest departures for any given route and shape', async () => {
@@ -346,16 +346,16 @@ describe('App', () => {
     await page.render(<App />)
 
     const stopOne = locateStop('Stop one')
-    await expect(stopOne).toBeVisible()
-    await expect(locateDeparture(stopOne, 'MR', 'Trip one', '12:01 pm')).toBeVisible()
-    await expect(locateDeparture(page, 'MR', 'Trip one', '12:03 pm')).not.toBeInTheDocument()
-    await expect(locateDeparture(stopOne, 'MR', 'Trip two', '12:05 pm')).toBeVisible()
+    await expect.element(stopOne).toBeVisible()
+    await expect.element(locateDeparture(stopOne, 'MR', 'Trip one', '12:01 pm')).toBeVisible()
+    await expect.element(locateDeparture(page, 'MR', 'Trip one', '12:03 pm')).not.toBeInTheDocument()
+    await expect.element(locateDeparture(stopOne, 'MR', 'Trip two', '12:05 pm')).toBeVisible()
 
     const stopTwo = locateStop('Stop two')
-    await expect(stopTwo).toBeVisible()
-    await expect(locateDeparture(stopTwo, 'MR', 'Trip one', '12:02 pm')).toBeVisible()
-    await expect(locateDeparture(page, 'MR', 'Trip one', '12:04 am')).not.toBeInTheDocument()
-    await expect(locateDeparture(stopTwo, 'MR', 'Trip two', '12:06 pm')).toBeVisible()
+    await expect.element(stopTwo).toBeVisible()
+    await expect.element(locateDeparture(stopTwo, 'MR', 'Trip one', '12:02 pm')).toBeVisible()
+    await expect.element(locateDeparture(page, 'MR', 'Trip one', '12:04 am')).not.toBeInTheDocument()
+    await expect.element(locateDeparture(stopTwo, 'MR', 'Trip two', '12:06 pm')).toBeVisible()
   })
 
   it('gracefully ignores incomplete data', async () => {
@@ -424,8 +424,8 @@ describe('App', () => {
     configureApp({ stopIds: 'MY_STOP,NO_STOP' })
     await page.render(<App />)
 
-    await expect(locateStop('My stop')).toBeVisible()
-    await expect(locateDeparture(page, '12:05 pm')).not.toBeInTheDocument()
+    await expect.element(locateStop('My stop')).toBeVisible()
+    await expect.element(locateDeparture(page, '12:05 pm')).not.toBeInTheDocument()
   })
 
   it('prefers departure times but falls back to arrival times', async () => {
@@ -484,15 +484,46 @@ describe('App', () => {
     await page.render(<App />)
 
     const stop = locateStop('My stop')
-    await expect(stop).toBeVisible()
-    await expect(locateDeparture(stop, 'MR', 'Trip one', '12:05 pm')).toBeVisible()
-    await expect(locateDeparture(stop, 'MR', 'Trip two', '12:06 pm')).toBeVisible()
-    await expect(locateDeparture(stop, 'MR', 'Trip three', '12:08 pm')).toBeVisible()
+    await expect.element(stop).toBeVisible()
+    await expect.element(locateDeparture(stop, 'MR', 'Trip one', '12:05 pm')).toBeVisible()
+    await expect.element(locateDeparture(stop, 'MR', 'Trip two', '12:06 pm')).toBeVisible()
+    await expect.element(locateDeparture(stop, 'MR', 'Trip three', '12:08 pm')).toBeVisible()
   })
 
   it('sorts departures by time', async () => {})
 
-  it('alternates between absolute and relative time', async () => {})
+  it('alternates between absolute and relative time', async () => {
+    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
+      routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
+      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' }],
+      stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
+    }))
+    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
+      entity: [
+        {
+          tripUpdate: {
+            trip: { tripId: 'MY_TRIP' },
+            stopTimeUpdate: [
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 5) }
+              }
+            ]
+          }
+        },
+      ]
+    }))
+
+    configureApp({ stopIds: 'MY_STOP' })
+    await page.render(<App />)
+
+    const stop = locateStop('My stop')
+    await expect.element(stop).toBeVisible()
+    await expect.element(locateDeparture(stop, 'MR', 'My trip', '12:05 pm')).toBeVisible()
+    await vi.advanceTimersByTime(5000)
+    await expect.element(locateDeparture(stop, 'MR', 'My trip', '5 minutes')).toBeVisible()
+  })
 
   it('uses route colors for each departure', async () => {})
 
