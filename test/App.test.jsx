@@ -1,6 +1,7 @@
-import { page } from '@vitest/browser/context'
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { page } from 'vitest/browser'
+import 'vitest-browser-react'
 import App from '../src/App.jsx'
 
 const ScheduleRelationship = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship
@@ -35,7 +36,13 @@ describe('App', () => {
   const currentUnixTime = 43200 // 12 pm
 
   beforeEach(() => {
+    vi.useFakeTimers()
     vi.setSystemTime(new Date(currentUnixTime * 1000))
+  })
+
+  afterEach(async () => {
+    vi.useRealTimers()
+    vi.resetAllMocks()
   })
 
   it('renders nothing when no data has been fetched', async () => {
@@ -43,8 +50,8 @@ describe('App', () => {
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => undefined)
 
     configureApp({ stopIds: 'MY_STOP' })
-    const { container } = page.render(<App />)
-    await expect(container).toBeEmptyDOMElement()
+    await page.render(<App />)
+    await expect(page.getByRole('article')).not.toBeInTheDocument()
   })
 
   it('renders departures when data has been fetched', async () => {
@@ -71,7 +78,7 @@ describe('App', () => {
     }))
 
     configureApp({ stopIds: 'MY_STOP' })
-    page.render(<App />)
+    await page.render(<App />)
 
     const stop = locateStop('My stop')
     await expect(stop).toBeVisible()
@@ -116,10 +123,10 @@ describe('App', () => {
     }))
 
     configureApp({ stopIds: 'STOP_TWO,STOP_THREE' })
-    page.render(<App />)
+    await page.render(<App />)
 
-    await expect(locateStop('Stop one').query()).toBeNull()
-    await expect(locateDeparture(page, 'MR', 'My trip', '12:05 pm').query()).toBeNull()
+    await expect(locateStop('Stop one')).not.toBeInTheDocument()
+    await expect(locateDeparture(page, 'MR', 'My trip', '12:05 pm')).not.toBeInTheDocument()
 
     const stopTwo = locateStop('Stop two')
     await expect(stopTwo).toBeVisible()
@@ -192,20 +199,20 @@ describe('App', () => {
     }))
 
     configureApp({ stopIds: 'STOP_ONE,STOP_TWO' })
-    page.render(<App />)
+    await page.render(<App />)
 
     const stopOne = locateStop('Stop one')
     await expect(stopOne).toBeVisible()
-    await expect(locateDeparture(page, 'MR', 'My trip', '12:01 pm').query()).toBeNull()
-    await expect(locateDeparture(page, 'MR', 'My trip', '12:02 pm').query()).toBeNull()
-    await expect(locateDeparture(page, 'MR', 'My trip', '12:03 pm').query()).toBeNull()
+    await expect(locateDeparture(page, 'MR', 'My trip', '12:01 pm')).not.toBeInTheDocument()
+    await expect(locateDeparture(page, 'MR', 'My trip', '12:02 pm')).not.toBeInTheDocument()
+    await expect(locateDeparture(page, 'MR', 'My trip', '12:03 pm')).not.toBeInTheDocument()
     await expect(locateDeparture(stopOne, 'MR', 'My trip', '12:04 pm')).toBeVisible()
 
     const stopTwo = locateStop('Stop two')
     await expect(stopTwo).toBeVisible()
-    await expect(locateDeparture(page, 'MR', 'My trip', '12:05 pm').query()).toBeNull()
-    await expect(locateDeparture(page, 'MR', 'My trip', '12:06 pm').query()).toBeNull()
-    await expect(locateDeparture(page, 'MR', 'My trip', '12:07 pm').query()).toBeNull()
+    await expect(locateDeparture(page, 'MR', 'My trip', '12:05 pm')).not.toBeInTheDocument()
+    await expect(locateDeparture(page, 'MR', 'My trip', '12:06 pm')).not.toBeInTheDocument()
+    await expect(locateDeparture(page, 'MR', 'My trip', '12:07 pm')).not.toBeInTheDocument()
     await expect(locateDeparture(stopTwo, 'MR', 'My trip', '12:08 pm')).toBeVisible()
   })
 
@@ -251,16 +258,16 @@ describe('App', () => {
     }))
 
     configureApp({ stopIds: 'STOP_ONE,STOP_TWO' })
-    page.render(<App />)
+    await page.render(<App />)
 
     const stopOne = locateStop('Stop one')
     await expect(stopOne).toBeVisible()
-    await expect(locateDeparture(page, 'MR', 'My trip', '11:58 am').query()).toBeNull()
+    await expect(locateDeparture(page, 'MR', 'My trip', '11:58 am')).not.toBeInTheDocument()
     await expect(locateDeparture(stopOne, 'MR', 'My trip', '12:00 pm')).toBeVisible()
 
     const stopTwo = locateStop('Stop two')
     await expect(stopTwo).toBeVisible()
-    await expect(locateDeparture(page, 'MR', 'My trip', '11:59 am').query()).toBeNull()
+    await expect(locateDeparture(page, 'MR', 'My trip', '11:59 am')).not.toBeInTheDocument()
     await expect(locateDeparture(stopTwo, 'MR', 'My trip', '12:01 pm')).toBeVisible()
   })
 
@@ -336,18 +343,18 @@ describe('App', () => {
     }))
 
     configureApp({ stopIds: 'STOP_ONE,STOP_TWO' })
-    page.render(<App />)
+    await page.render(<App />)
 
     const stopOne = locateStop('Stop one')
     await expect(stopOne).toBeVisible()
     await expect(locateDeparture(stopOne, 'MR', 'Trip one', '12:01 pm')).toBeVisible()
-    await expect(locateDeparture(page, 'MR', 'Trip one', '12:03 pm').query()).toBeNull()
+    await expect(locateDeparture(page, 'MR', 'Trip one', '12:03 pm')).not.toBeInTheDocument()
     await expect(locateDeparture(stopOne, 'MR', 'Trip two', '12:05 pm')).toBeVisible()
 
     const stopTwo = locateStop('Stop two')
     await expect(stopTwo).toBeVisible()
     await expect(locateDeparture(stopTwo, 'MR', 'Trip one', '12:02 pm')).toBeVisible()
-    await expect(locateDeparture(page, 'MR', 'Trip one', '12:04 am').query()).toBeNull()
+    await expect(locateDeparture(page, 'MR', 'Trip one', '12:04 am')).not.toBeInTheDocument()
     await expect(locateDeparture(stopTwo, 'MR', 'Trip two', '12:06 pm')).toBeVisible()
   })
 
@@ -415,10 +422,10 @@ describe('App', () => {
     }))
 
     configureApp({ stopIds: 'MY_STOP,NO_STOP' })
-    page.render(<App />)
+    await page.render(<App />)
 
     await expect(locateStop('My stop')).toBeVisible()
-    await expect(locateDeparture(page, '12:05 pm').query()).toBeNull()
+    await expect(locateDeparture(page, '12:05 pm')).not.toBeInTheDocument()
   })
 
   it('prefers departure times but falls back to arrival times', async () => {
@@ -474,7 +481,7 @@ describe('App', () => {
     }))
 
     configureApp({ stopIds: 'MY_STOP' })
-    page.render(<App />)
+    await page.render(<App />)
 
     const stop = locateStop('My stop')
     await expect(stop).toBeVisible()
