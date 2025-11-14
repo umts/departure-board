@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react'
+import { playwright } from '@vitest/browser-playwright'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
@@ -8,12 +9,12 @@ export default defineConfig({
     setupFiles: ['./test/setup.js'],
     browser: {
       enabled: true,
-      provider: 'playwright',
+      provider: playwright({ contextOptions: { timezoneId: 'UTC' } }),
       headless: true,
       instances: [
-        { browser: 'chromium', context: { timezoneId: 'GMT' } },
-        { browser: 'firefox', context: { timezoneId: 'GMT' } },
-        { browser: 'webkit', context: { timezoneId: 'GMT' } },
+        { browser: 'chromium' },
+        { browser: 'firefox' },
+        { browser: 'webkit' },
       ],
     },
     coverage: {
