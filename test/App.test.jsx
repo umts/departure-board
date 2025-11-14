@@ -523,9 +523,59 @@ describe('App', () => {
     await expect.element(locateDeparture(stop, 'MR', 'My trip', '12:05 pm')).toBeVisible()
     await vi.advanceTimersByTime(5000)
     await expect.element(locateDeparture(stop, 'MR', 'My trip', '5 minutes')).toBeVisible()
+    await vi.advanceTimersByTime(5000)
+    await expect.element(locateDeparture(stop, 'MR', 'My trip', '12:05 pm')).toBeVisible()
   })
 
   it('uses route colors for each departure', async () => {})
 
-  it('handles resize events without error', async () => {})
+  it('handles resize events without error', async () => {
+    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
+      routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
+      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' }],
+      stops: [
+        { stopId: 'STOP_ONE', stopName: 'Stop one' },
+        { stopId: 'STOP_TWO', stopName: 'Stop two' },
+      ],
+    }))
+    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
+      entity: [
+        {
+          tripUpdate: {
+            trip: { tripId: 'MY_TRIP' },
+            stopTimeUpdate: [
+              {
+                stopId: 'STOP_ONE',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 5) }
+              },
+              {
+                stopId: 'STOP_TWO',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 10) }
+              },
+            ]
+          }
+        },
+      ]
+    }))
+
+    configureApp({ stopIds: 'STOP_ONE,STOP_TWO' })
+    await page.render(<App />)
+
+    const stopOne = locateStop('Stop one')
+    const stopTwo = locateStop('Stop two')
+
+    await page.viewport(1280, 720)
+    await expect.element(stopOne).toBeVisible()
+    await expect.element(locateDeparture(stopOne, 'MR', 'My trip', '12:05 pm')).toBeVisible()
+    await expect.element(stopTwo).toBeVisible()
+    await expect.element(locateDeparture(stopTwo, 'MR', 'My trip', '12:10 pm')).toBeVisible()
+
+    await page.viewport(720, 1280)
+    await expect.element(stopOne).toBeVisible()
+    await expect.element(locateDeparture(stopOne, 'MR', 'My trip', '12:05 pm')).toBeVisible()
+    await expect.element(stopTwo).toBeVisible()
+    await expect.element(locateDeparture(stopTwo, 'MR', 'My trip', '12:10 pm')).toBeVisible()
+  })
 })
