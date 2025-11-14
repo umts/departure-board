@@ -490,7 +490,9 @@ describe('App', () => {
     await expect.element(locateDeparture(stop, 'MR', 'Trip three', '12:08 pm')).toBeVisible()
   })
 
-  it('sorts departures by time', async () => {})
+  it('sorts departures by time', async () => {
+    // TODO: Implement.
+  })
 
   it('alternates between absolute and relative time', async () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
@@ -527,7 +529,9 @@ describe('App', () => {
     await expect.element(locateDeparture(stop, 'MR', 'My trip', '12:05 pm')).toBeVisible()
   })
 
-  it('uses route colors for each departure', async () => {})
+  it('uses route colors for each departure', async () => {
+    // TODO: Implement.
+  })
 
   it('handles resize events without error', async () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
