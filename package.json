@@ -25,7 +25,7 @@
   "devDependencies": {
     "@vitest/browser-playwright": "*",
     "@vitest/coverage-istanbul": "*",
-    "@vitest/ui": "^4.0.9",
+    "@vitest/ui": "*",
     "eslint": "*",
     "eslint-plugin-react-hooks": "*",
     "eslint-plugin-react-refresh": "*",
