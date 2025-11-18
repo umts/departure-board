@@ -368,6 +368,79 @@ describe('App', () => {
     await expect.element(locateDeparture(stopTwo, 'MR', 'Trip two', '12:06 pm')).toBeVisible()
   })
 
+  it('does not render the last stop in each trip', async () => {
+    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
+      routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
+      trips: [
+        { tripId: 'TRIP_ONE', routeId: 'MY_ROUTE', shapeId: 'SHAPE_ONE', tripHeadsign: 'Trip one' },
+        { tripId: 'TRIP_TWO', routeId: 'MY_ROUTE', shapeId: 'SHAPE_TWO', tripHeadsign: 'Trip two' },
+      ],
+      stops: [
+        { stopId: 'STOP_ONE', stopName: 'Stop one' },
+        { stopId: 'STOP_TWO', stopName: 'Stop two' },
+        { stopId: 'STOP_THREE', stopName: 'Stop three' },
+      ],
+      stopTimes: [
+        { tripId: 'TRIP_ONE', stopId: 'STOP_ONE', stopSequence: '1' },
+        { tripId: 'TRIP_ONE', stopId: 'STOP_TWO', stopSequence: '2' },
+        { tripId: 'TRIP_TWO', stopId: 'STOP_ONE', stopSequence: '1' },
+        { tripId: 'TRIP_TWO', stopId: 'STOP_TWO', stopSequence: '2' },
+        { tripId: 'TRIP_TWO', stopId: 'STOP_THREE', stopSequence: '3' },
+      ],
+    }))
+    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
+      entity: [
+        {
+          tripUpdate: {
+            trip: { tripId: 'TRIP_ONE' },
+            stopTimeUpdate: [
+              {
+                stopId: 'STOP_ONE',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 4) }
+              },
+              {
+                stopId: 'STOP_TWO',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 8) }
+              },
+            ]
+          }
+        },
+        {
+          tripUpdate: {
+            trip: { tripId: 'TRIP_TWO' },
+            stopTimeUpdate: [
+              {
+                stopId: 'STOP_ONE',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 4) }
+              },
+              {
+                stopId: 'STOP_TWO',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 8) }
+              },
+            ]
+          }
+        },
+      ]
+    }))
+
+    configureApp({ stopIds: 'STOP_ONE,STOP_TWO' })
+    await page.render(<App />)
+
+    const stopOne = locateStop('Stop one')
+    await expect.element(stopOne).toBeVisible()
+    await expect.element(locateDeparture(stopOne, 'MR', 'Trip one', '12:04 pm')).toBeVisible()
+    await expect.element(locateDeparture(stopOne, 'MR', 'Trip two', '12:04 pm')).toBeVisible()
+
+    const stopTwo = locateStop('Stop two')
+    await expect.element(stopTwo).toBeVisible()
+    await expect.element(locateDeparture(stopTwo, 'MR', 'Trip one', '12:08 pm')).not.toBeInTheDocument()
+    await expect.element(locateDeparture(stopTwo, 'MR', 'Trip two', '12:08 pm')).toBeVisible()
+  })
+
   it('gracefully ignores incomplete data', async () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
       routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
