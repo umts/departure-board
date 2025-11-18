@@ -59,6 +59,7 @@ describe('App', () => {
       routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
       trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' }],
       stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
+      stopTimes: [{ tripId: 'MY_TRIP', stopId: 'LAST_STOP', stopSequence: '2' }]
     }))
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
       entity: [
@@ -94,6 +95,7 @@ describe('App', () => {
         { stopId: 'STOP_TWO', stopName: 'Stop two' },
         { stopId: 'STOP_THREE', stopName: 'Stop three' },
       ],
+      stopTimes: [{ tripId: 'MY_TRIP', stopId: 'LAST_STOP', stopSequence: '4' }]
     }))
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
       entity: [
@@ -145,6 +147,7 @@ describe('App', () => {
         { stopId: 'STOP_ONE', stopName: 'Stop one' },
         { stopId: 'STOP_TWO', stopName: 'Stop two' },
       ],
+      stopTimes: [{ tripId: 'MY_TRIP', stopId: 'LAST_STOP', stopSequence: '3' }],
     }))
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
       entity: [
@@ -224,6 +227,7 @@ describe('App', () => {
         { stopId: 'STOP_ONE', stopName: 'Stop one' },
         { stopId: 'STOP_TWO', stopName: 'Stop two' },
       ],
+      stopTimes: [{ tripId: 'MY_TRIP', stopId: 'LAST_STOP', stopSequence: '3' }],
     }))
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
       entity: [
@@ -281,6 +285,12 @@ describe('App', () => {
       stops: [
         { stopId: 'STOP_ONE', stopName: 'Stop one' },
         { stopId: 'STOP_TWO', stopName: 'Stop two' },
+      ],
+      stopTimes: [
+        { tripId: 'TRIP_ONE', stopId: 'LAST_STOP', stopSequence: '3' },
+        { tripId: 'TRIP_ONE', stopId: 'SECOND_TO_LAST_STOP', stopSequence: '2' },
+        { tripId: 'TRIP_TWO', stopId: 'LAST_STOP', stopSequence: '3' },
+        { tripId: 'TRIP_TWO', stopId: 'SECOND_TO_LAST_STOP', stopSequence: '2' },
       ],
     }))
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
@@ -365,8 +375,11 @@ describe('App', () => {
         { tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' },
         { tripId: 'NO_ROUTE_TRIP', routeId: 'NO_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'No route trip' },
         { tripId: 'NO_SHAPE_TRIP', routeId: 'NO_ROUTE', tripHeadsign: 'No shape trip' },
+        { tripId: 'DUPLICATE_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'Duplicate trip' },
+        { tripId: 'DUPLICATE_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'Duplicate trip' },
       ],
       stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
+      stopTimes: [],
     }))
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
       entity: [
@@ -437,6 +450,11 @@ describe('App', () => {
         { tripId: 'TRIP_THREE', routeId: 'MY_ROUTE', shapeId: 'SHAPE_THREE', tripHeadsign: 'Trip three' }
       ],
       stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
+      stopTimes: [
+        { tripId: 'TRIP_ONE', stopId: 'LAST_STOP', stopSequence: '2' },
+        { tripId: 'TRIP_TWO', stopId: 'LAST_STOP', stopSequence: '2' },
+        { tripId: 'TRIP_THREE', stopId: 'LAST_STOP', stopSequence: '2' },
+      ],
     }))
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
       entity: [
@@ -499,6 +517,7 @@ describe('App', () => {
       routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
       trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' }],
       stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
+      stopTimes: [{ tripId: 'MY_TRIP', stopId: 'LAST_STOP', stopSequence: '2' }],
     }))
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
       entity: [
@@ -541,6 +560,7 @@ describe('App', () => {
         { stopId: 'STOP_ONE', stopName: 'Stop one' },
         { stopId: 'STOP_TWO', stopName: 'Stop two' },
       ],
+      stopTimes: [{ tripId: 'MY_TRIP', stopId: 'LAST_STOP', stopSequence: '2' }],
     }))
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
       entity: [

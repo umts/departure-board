@@ -15,14 +15,16 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
   const routesById = buildIndex(gtfsSchedule.routes, (route) => route.routeId)
   const stopsById = buildIndex(gtfsSchedule.stops, (stop) => stop.stopId)
   const tripsById = buildIndex(gtfsSchedule.trips, (trip) => trip.tripId)
-  const stopTimesByTripId = gtfsSchedule.stopTimes.reduce((map, current) => {
-    map[current.tripId] ??= []
-    map[current.tripId].push(current)
-    return map
-  })
+  const lastStopTimesByTripId = buildIndex(gtfsSchedule.stopTimes, (stopTime) => stopTime.tripId, (prev, next) => (
+    Number(next.stopSequence) >= Number(prev.stopSequence)
+  ))
 
   const stops = [...new Set(stopIds)].map((stopId) => stopsById[stopId]).filter(Boolean)
-  const updates = earliestStopTimeUpdates(gtfsTripUpdates.entity.map((entity) => entity.tripUpdate), tripsById, stopTimesByTripId)
+  const updates = earliestStopTimeUpdates(
+    gtfsTripUpdates.entity.map((entity) => entity.tripUpdate),
+    tripsById,
+    lastStopTimesByTripId
+  )
 
   const departures = []
   stops.forEach((stop) => {
@@ -47,13 +49,18 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
   return departures
 }
 
-function buildIndex (collection, computeKey) {
+function buildIndex (collection, computeKey, replace = () => true) {
   const index = {}
-  collection.forEach((item) => { index[computeKey(item)] ??= item })
+  collection.forEach((item) => {
+    const key = computeKey(item)
+    if (!(key in index) || replace(index[key], item)) {
+      index[key] = item
+    }
+  })
   return index
 }
 
-function earliestStopTimeUpdates (tripUpdates, tripsById, stopTimesByTripId) {
+function earliestStopTimeUpdates (tripUpdates, tripsById, lastStopTimesByTripId) {
   const stopTimeUpdates = {}
   tripUpdates.forEach((tripUpdate) => {
     const trip = tripsById[tripUpdate.trip.tripId]
@@ -69,7 +76,7 @@ function earliestStopTimeUpdates (tripUpdates, tripsById, stopTimesByTripId) {
       const time = fromUnixTime((stopTimeUpdate.departure || stopTimeUpdate.arrival).time)
 
       if (isPast(time)) return
-      if (isLastStopInTrip(tripId, stopId, stopTimesByTripId)) return
+      if (lastStopTimesByTripId[tripId]?.stopId === stopId) return
 
       stopTimeUpdates[stopId] ??= {}
       stopTimeUpdates[stopId][routeId] ??= {}
@@ -88,11 +95,4 @@ function earliestStopTimeUpdates (tripUpdates, tripsById, stopTimesByTripId) {
     })
   })
   return departures
-}
-
-function isLastStopInTrip (tripId, stopId, stopTimesByTripId) {
-  const lastStopId = stopTimesByTripId[tripId].reduce((target, current) => {
-    return Number(target.stopSequence) > Number(current.stopSequence) ? target : current
-  }).stopId
-  return lastStopId === stopId
 }
