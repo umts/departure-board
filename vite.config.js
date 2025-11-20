@@ -20,7 +20,7 @@ export default defineConfig({
     coverage: {
       enabled: true,
       provider: 'istanbul',
-      include: ['src/**/*'],
+      include: ['src/**/*.js', 'src/**/*.jsx'],
       exclude: ['src/index.jsx'],
       thresholds: {
         100: true,
