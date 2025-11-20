@@ -18,9 +18,9 @@ vi.mock('gtfs-react-hooks', () => ({
   useFetchResolver: gtfsReactHooksMocks.useFetchResolver,
 }))
 
-function configureApp ({ stopIds }) {
+function setSearchParams (options) {
   const url = new URL(location)
-  url.searchParams.set('stopIds', stopIds)
+  Object.entries(options).forEach(([key, val]) => { url.searchParams.set(key, val) })
   history.pushState({}, '', url)
 }
 
@@ -49,7 +49,7 @@ describe('App', () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => undefined)
     gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => undefined)
 
-    configureApp({ stopIds: 'MY_STOP' })
+    setSearchParams({ stopIds: 'MY_STOP' })
     await page.render(<App />)
     await expect.element(page.getByRole('article')).not.toBeInTheDocument()
   })
@@ -78,7 +78,7 @@ describe('App', () => {
       ]
     }))
 
-    configureApp({ stopIds: 'MY_STOP' })
+    setSearchParams({ stopIds: 'MY_STOP' })
     await page.render(<App />)
 
     const stop = locateStop('My stop')
@@ -124,7 +124,7 @@ describe('App', () => {
       ]
     }))
 
-    configureApp({ stopIds: 'STOP_TWO,STOP_THREE' })
+    setSearchParams({ stopIds: 'STOP_TWO,STOP_THREE' })
     await page.render(<App />)
 
     await expect.element(locateStop('Stop one')).not.toBeInTheDocument()
@@ -137,6 +137,76 @@ describe('App', () => {
     const stopThree = locateStop('Stop three')
     await expect.element(stopThree).toBeVisible()
     await expect.element(locateDeparture(stopThree, 'MR', 'My trip', '12:15 pm')).toBeVisible()
+  })
+
+  it('only renders departures for configured routes', async () => {
+    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
+      routes: [
+        { routeId: 'ROUTE_ONE', routeShortName: 'R1', routeColor: '111111' },
+        { routeId: 'ROUTE_TWO', routeShortName: 'R2', routeColor: '111111' },
+        { routeId: 'ROUTE_THREE', routeShortName: 'R3', routeColor: '111111' },
+      ],
+      trips: [
+        { tripId: 'TRIP_ONE', routeId: 'ROUTE_ONE', shapeId: 'MY_SHAPE', tripHeadsign: 'Trip one' },
+        { tripId: 'TRIP_TWO', routeId: 'ROUTE_TWO', shapeId: 'MY_SHAPE', tripHeadsign: 'Trip two' },
+        { tripId: 'TRIP_THREE', routeId: 'ROUTE_THREE', shapeId: 'MY_SHAPE', tripHeadsign: 'Trip three' },
+      ],
+      stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
+      stopTimes: [
+        { tripId: 'TRIP_ONE', stopId: 'LAST_STOP', stopSequence: '4' },
+        { tripId: 'TRIP_TWO', stopId: 'LAST_STOP', stopSequence: '4' },
+        { tripId: 'TRIP_THREE', stopId: 'LAST_STOP', stopSequence: '4' },
+      ]
+    }))
+    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => ({
+      entity: [
+        {
+          tripUpdate: {
+            trip: { tripId: 'TRIP_ONE' },
+            stopTimeUpdate: [
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 5) }
+              },
+            ],
+          },
+        },
+        {
+          tripUpdate: {
+            trip: { tripId: 'TRIP_TWO' },
+            stopTimeUpdate: [
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 10) }
+              },
+            ],
+          },
+        },
+        {
+          tripUpdate: {
+            trip: { tripId: 'TRIP_THREE' },
+            stopTimeUpdate: [
+              {
+                stopId: 'MY_STOP',
+                scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                departure: { time: currentUnixTime + (60 * 15) }
+              },
+            ],
+          },
+        },
+      ]
+    }))
+
+    setSearchParams({ stopIds: 'MY_STOP', routeIds: 'ROUTE_TWO,ROUTE_THREE' })
+    await page.render(<App />)
+
+    const stop = locateStop('My stop')
+    await expect.element(stop).toBeVisible()
+    await expect.element(locateDeparture(page, 'R1', 'Trip one', '12:05 pm')).not.toBeInTheDocument()
+    await expect.element(locateDeparture(stop, 'R2', 'Trip two', '12:10 pm')).toBeVisible()
+    await expect.element(locateDeparture(stop, 'R3', 'Trip three', '12:15 pm')).toBeVisible()
   })
 
   it('only renders scheduled departures', async () => {
@@ -201,7 +271,7 @@ describe('App', () => {
       ]
     }))
 
-    configureApp({ stopIds: 'STOP_ONE,STOP_TWO' })
+    setSearchParams({ stopIds: 'STOP_ONE,STOP_TWO' })
     await page.render(<App />)
 
     const stopOne = locateStop('Stop one')
@@ -261,7 +331,7 @@ describe('App', () => {
       ]
     }))
 
-    configureApp({ stopIds: 'STOP_ONE,STOP_TWO' })
+    setSearchParams({ stopIds: 'STOP_ONE,STOP_TWO' })
     await page.render(<App />)
 
     const stopOne = locateStop('Stop one')
@@ -352,7 +422,7 @@ describe('App', () => {
       ]
     }))
 
-    configureApp({ stopIds: 'STOP_ONE,STOP_TWO' })
+    setSearchParams({ stopIds: 'STOP_ONE,STOP_TWO' })
     await page.render(<App />)
 
     const stopOne = locateStop('Stop one')
@@ -427,7 +497,7 @@ describe('App', () => {
       ]
     }))
 
-    configureApp({ stopIds: 'STOP_ONE,STOP_TWO' })
+    setSearchParams({ stopIds: 'STOP_ONE,STOP_TWO' })
     await page.render(<App />)
 
     const stopOne = locateStop('Stop one')
@@ -507,7 +577,7 @@ describe('App', () => {
       ]
     }))
 
-    configureApp({ stopIds: 'MY_STOP,NO_STOP' })
+    setSearchParams({ stopIds: 'MY_STOP,NO_STOP' })
     await page.render(<App />)
 
     await expect.element(locateStop('My stop')).toBeVisible()
@@ -571,7 +641,7 @@ describe('App', () => {
       ]
     }))
 
-    configureApp({ stopIds: 'MY_STOP' })
+    setSearchParams({ stopIds: 'MY_STOP' })
     await page.render(<App />)
 
     const stop = locateStop('My stop')
@@ -609,7 +679,7 @@ describe('App', () => {
       ]
     }))
 
-    configureApp({ stopIds: 'MY_STOP' })
+    setSearchParams({ stopIds: 'MY_STOP' })
     await page.render(<App />)
 
     const stop = locateStop('My stop')
@@ -657,7 +727,7 @@ describe('App', () => {
       ]
     }))
 
-    configureApp({ stopIds: 'STOP_ONE,STOP_TWO' })
+    setSearchParams({ stopIds: 'STOP_ONE,STOP_TWO' })
     await page.render(<App />)
 
     const stopOne = locateStop('Stop one')
