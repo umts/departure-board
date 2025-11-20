@@ -20,7 +20,9 @@ vi.mock('gtfs-react-hooks', () => ({
 
 function setSearchParams (options) {
   const url = new URL(location)
-  Object.entries(options).forEach(([key, val]) => { url.searchParams.set(key, val) })
+  const search = new URLSearchParams()
+  Object.entries(options).forEach(([key, val]) => { search.set(key, val) })
+  url.search = search
   history.pushState({}, '', url)
 }
 
@@ -43,6 +45,14 @@ describe('App', () => {
   afterEach(() => {
     vi.useRealTimers()
     vi.resetAllMocks()
+  })
+
+  it('renders nothing when no stop has been configured', async () => {
+    gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => undefined)
+    gtfsReactHooksMocks.useGtfsRealtime.mockImplementation(() => undefined)
+
+    await page.render(<App />)
+    await expect.element(page.getByRole('article')).not.toBeInTheDocument()
   })
 
   it('renders nothing when no data has been fetched', async () => {
