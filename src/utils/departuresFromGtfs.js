@@ -3,7 +3,7 @@ import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
 
 const ScheduleRelationship = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship
 
-export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopIds) {
+export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopIds, routeIds) {
   if (gtfsSchedule?.routes === undefined ||
       gtfsSchedule?.stops === undefined ||
       gtfsSchedule?.stopTimes === undefined ||
@@ -35,6 +35,7 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
         const trip = tripsById[update.tripId]
         const route = routesById[update.routeId]
         if (trip === undefined || route === undefined) return undefined
+        if (routeIds && !(routeIds.includes(route.routeId))) return undefined
 
         return {
           id: `${update.shapeId}-${update.routeId}`,
