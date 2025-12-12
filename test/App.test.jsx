@@ -355,7 +355,7 @@ describe('App', () => {
     await expect.element(locateDeparture(stopTwo, 'MR', 'My trip', '12:01 pm')).toBeVisible()
   })
 
-  it('only renders the earliest departures for any given route and shape', async () => {
+  it('only renders the earliest departures for any given route and headsign', async () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
       routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
       trips: [
@@ -527,7 +527,6 @@ describe('App', () => {
       trips: [
         { tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' },
         { tripId: 'NO_ROUTE_TRIP', routeId: 'NO_ROUTE', tripHeadsign: 'No route trip' },
-        { tripId: 'NO_SHAPE_TRIP', routeId: 'NO_ROUTE', tripHeadsign: 'No shape trip' },
         { tripId: 'DUPLICATE_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'Duplicate trip' },
         { tripId: 'DUPLICATE_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'Duplicate trip' },
       ],
@@ -551,18 +550,6 @@ describe('App', () => {
         {
           tripUpdate: {
             trip: { tripId: 'NO_ROUTE_TRIP' },
-            stopTimeUpdate: [
-              {
-                stopId: 'MY_STOP',
-                scheduleRelationship: ScheduleRelationship.SCHEDULED,
-                departure: { time: currentUnixTime + (60 * 5) }
-              }
-            ]
-          }
-        },
-        {
-          tripUpdate: {
-            trip: { tripId: 'NO_SHAPE_TRIP' },
             stopTimeUpdate: [
               {
                 stopId: 'MY_STOP',
