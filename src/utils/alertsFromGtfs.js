@@ -8,6 +8,7 @@ export default function alertsFromGtfs (gtfsAlerts, stopIds, routeIds) {
 
   return gtfsAlerts.entity
     .map((entity) => entity.alert)
+    .filter(Boolean)
     .filter(alertIsPresent)
     .filter((alert) => { return alertIsRelevant(alert, stopIds, routeIds) })
     .map(transformToReactData)
