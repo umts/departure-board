@@ -4,6 +4,7 @@ import DepartureBoard from './components/DepartureBoard.jsx'
 import Stop from './components/Stop.jsx'
 import useConfig from './hooks/useConfig.js'
 import departuresFromGtfs from './utils/departuresFromGtfs.js'
+import alertsFromGtfs from './utils/alertsFromGtfs.js'
 
 export default function App () {
   const { stopIds, routeIds } = useConfig()
@@ -14,7 +15,11 @@ export default function App () {
   const tripUpdatesResolver = useFetchResolver('http://localhost:9292/gtfs-rt/trip-updates')
   const gtfsTripUpdates = useGtfsRealtime(tripUpdatesResolver, 30 * 1000)
 
+  const alertsResolver = useFetchResolver('http://localhost:9292/gtfs-rt/alerts')
+  const gtfsAlerts = useGtfsRealtime(alertsResolver, 30 * 1000)
+
   const stops = departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopIds, routeIds)
+  const alerts = alertsFromGtfs(gtfsAlerts, stopIds, routeIds)
 
   return (
     <>
