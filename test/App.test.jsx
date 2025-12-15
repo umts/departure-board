@@ -67,7 +67,7 @@ describe('App', () => {
   it('renders departures when data has been fetched', async () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
       routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
-      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' }],
+      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' }],
       stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
       stopTimes: [{ tripId: 'MY_TRIP', stopId: 'LAST_STOP', stopSequence: '2' }]
     }))
@@ -99,7 +99,7 @@ describe('App', () => {
   it('only renders departures for configured stops', async () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
       routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
-      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' }],
+      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' }],
       stops: [
         { stopId: 'STOP_ONE', stopName: 'Stop one' },
         { stopId: 'STOP_TWO', stopName: 'Stop two' },
@@ -157,9 +157,9 @@ describe('App', () => {
         { routeId: 'ROUTE_THREE', routeShortName: 'R3', routeColor: '111111' },
       ],
       trips: [
-        { tripId: 'TRIP_ONE', routeId: 'ROUTE_ONE', shapeId: 'MY_SHAPE', tripHeadsign: 'Trip one' },
-        { tripId: 'TRIP_TWO', routeId: 'ROUTE_TWO', shapeId: 'MY_SHAPE', tripHeadsign: 'Trip two' },
-        { tripId: 'TRIP_THREE', routeId: 'ROUTE_THREE', shapeId: 'MY_SHAPE', tripHeadsign: 'Trip three' },
+        { tripId: 'TRIP_ONE', routeId: 'ROUTE_ONE', tripHeadsign: 'Trip one' },
+        { tripId: 'TRIP_TWO', routeId: 'ROUTE_TWO', tripHeadsign: 'Trip two' },
+        { tripId: 'TRIP_THREE', routeId: 'ROUTE_THREE', tripHeadsign: 'Trip three' },
       ],
       stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
       stopTimes: [
@@ -222,7 +222,7 @@ describe('App', () => {
   it('only renders scheduled departures', async () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
       routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
-      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' }],
+      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' }],
       stops: [
         { stopId: 'STOP_ONE', stopName: 'Stop one' },
         { stopId: 'STOP_TWO', stopName: 'Stop two' },
@@ -302,7 +302,7 @@ describe('App', () => {
   it('only renders departures in the future', async () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
       routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
-      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' }],
+      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' }],
       stops: [
         { stopId: 'STOP_ONE', stopName: 'Stop one' },
         { stopId: 'STOP_TWO', stopName: 'Stop two' },
@@ -355,12 +355,12 @@ describe('App', () => {
     await expect.element(locateDeparture(stopTwo, 'MR', 'My trip', '12:01 pm')).toBeVisible()
   })
 
-  it('only renders the earliest departures for any given route and shape', async () => {
+  it('only renders the earliest departures for any given route and headsign', async () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
       routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
       trips: [
-        { tripId: 'TRIP_ONE', routeId: 'MY_ROUTE', shapeId: 'SHAPE_ONE', tripHeadsign: 'Trip one' },
-        { tripId: 'TRIP_TWO', routeId: 'MY_ROUTE', shapeId: 'SHAPE_TWO', tripHeadsign: 'Trip two' }
+        { tripId: 'TRIP_ONE', routeId: 'MY_ROUTE', tripHeadsign: 'Trip one' },
+        { tripId: 'TRIP_TWO', routeId: 'MY_ROUTE', tripHeadsign: 'Trip two' }
       ],
       stops: [
         { stopId: 'STOP_ONE', stopName: 'Stop one' },
@@ -452,8 +452,8 @@ describe('App', () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
       routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
       trips: [
-        { tripId: 'TRIP_ONE', routeId: 'MY_ROUTE', shapeId: 'SHAPE_ONE', tripHeadsign: 'Trip one' },
-        { tripId: 'TRIP_TWO', routeId: 'MY_ROUTE', shapeId: 'SHAPE_TWO', tripHeadsign: 'Trip two' },
+        { tripId: 'TRIP_ONE', routeId: 'MY_ROUTE', tripHeadsign: 'Trip one' },
+        { tripId: 'TRIP_TWO', routeId: 'MY_ROUTE', tripHeadsign: 'Trip two' },
       ],
       stops: [
         { stopId: 'STOP_ONE', stopName: 'Stop one' },
@@ -525,11 +525,10 @@ describe('App', () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
       routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
       trips: [
-        { tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' },
-        { tripId: 'NO_ROUTE_TRIP', routeId: 'NO_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'No route trip' },
-        { tripId: 'NO_SHAPE_TRIP', routeId: 'NO_ROUTE', tripHeadsign: 'No shape trip' },
-        { tripId: 'DUPLICATE_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'Duplicate trip' },
-        { tripId: 'DUPLICATE_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'Duplicate trip' },
+        { tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' },
+        { tripId: 'NO_ROUTE_TRIP', routeId: 'NO_ROUTE', tripHeadsign: 'No route trip' },
+        { tripId: 'DUPLICATE_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'Duplicate trip' },
+        { tripId: 'DUPLICATE_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'Duplicate trip' },
       ],
       stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
       stopTimes: [],
@@ -551,18 +550,6 @@ describe('App', () => {
         {
           tripUpdate: {
             trip: { tripId: 'NO_ROUTE_TRIP' },
-            stopTimeUpdate: [
-              {
-                stopId: 'MY_STOP',
-                scheduleRelationship: ScheduleRelationship.SCHEDULED,
-                departure: { time: currentUnixTime + (60 * 5) }
-              }
-            ]
-          }
-        },
-        {
-          tripUpdate: {
-            trip: { tripId: 'NO_SHAPE_TRIP' },
             stopTimeUpdate: [
               {
                 stopId: 'MY_STOP',
@@ -598,9 +585,9 @@ describe('App', () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
       routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
       trips: [
-        { tripId: 'TRIP_ONE', routeId: 'MY_ROUTE', shapeId: 'SHAPE_ONE', tripHeadsign: 'Trip one' },
-        { tripId: 'TRIP_TWO', routeId: 'MY_ROUTE', shapeId: 'SHAPE_TWO', tripHeadsign: 'Trip two' },
-        { tripId: 'TRIP_THREE', routeId: 'MY_ROUTE', shapeId: 'SHAPE_THREE', tripHeadsign: 'Trip three' }
+        { tripId: 'TRIP_ONE', routeId: 'MY_ROUTE', tripHeadsign: 'Trip one' },
+        { tripId: 'TRIP_TWO', routeId: 'MY_ROUTE', tripHeadsign: 'Trip two' },
+        { tripId: 'TRIP_THREE', routeId: 'MY_ROUTE', tripHeadsign: 'Trip three' }
       ],
       stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
       stopTimes: [
@@ -668,7 +655,7 @@ describe('App', () => {
   it('alternates between absolute and relative time', async () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
       routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
-      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' }],
+      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' }],
       stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
       stopTimes: [{ tripId: 'MY_TRIP', stopId: 'LAST_STOP', stopSequence: '2' }],
     }))
@@ -708,7 +695,7 @@ describe('App', () => {
   it('handles resize events without error', async () => {
     gtfsReactHooksMocks.useGtfsSchedule.mockImplementation(() => ({
       routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
-      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', shapeId: 'MY_SHAPE', tripHeadsign: 'My trip' }],
+      trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' }],
       stops: [
         { stopId: 'STOP_ONE', stopName: 'Stop one' },
         { stopId: 'STOP_TWO', stopName: 'Stop two' },
