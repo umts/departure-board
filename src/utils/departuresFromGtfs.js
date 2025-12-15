@@ -38,7 +38,7 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
         if (routeIds && !(routeIds.includes(route.routeId))) return undefined
 
         return {
-          id: `${update.shapeId}-${update.routeId}`,
+          id: `${update.routeId}-${trip.tripHeadsign}`,
           destination: trip.tripHeadsign,
           route: route.routeShortName,
           time: update.time,
@@ -70,7 +70,7 @@ function earliestStopTimeUpdates (tripUpdates, tripsById, lastStopTimesByTripId)
     tripUpdate.stopTimeUpdate.forEach((stopTimeUpdate) => {
       if (stopTimeUpdate.scheduleRelationship !== ScheduleRelationship.SCHEDULED) return
 
-      const shapeId = trip.shapeId
+      const headsign = trip.tripHeadsign
       const stopId = stopTimeUpdate.stopId
       const routeId = trip.routeId
       const tripId = trip.tripId
@@ -81,16 +81,16 @@ function earliestStopTimeUpdates (tripUpdates, tripsById, lastStopTimesByTripId)
 
       stopTimeUpdates[stopId] ??= {}
       stopTimeUpdates[stopId][routeId] ??= {}
-      const previousDeparture = stopTimeUpdates[stopId][routeId][shapeId]
+      const previousDeparture = stopTimeUpdates[stopId][routeId][headsign]
       if (previousDeparture === undefined || previousDeparture.time > time) {
-        stopTimeUpdates[stopId][routeId][shapeId] = { shapeId, stopId, tripId, routeId, time }
+        stopTimeUpdates[stopId][routeId][headsign] = { stopId, tripId, routeId, time }
       }
     })
   })
   const departures = []
   Object.values(stopTimeUpdates).forEach((byRoute) => {
-    Object.values(byRoute).forEach((byShape) => {
-      Object.values(byShape).forEach((departure) => {
+    Object.values(byRoute).forEach((byHeadsign) => {
+      Object.values(byHeadsign).forEach((departure) => {
         departures.push(departure)
       })
     })
