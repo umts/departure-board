@@ -9,6 +9,9 @@ updates:
         patterns:
           - "react"
           - "react-dom"
+      stylelint-packages:
+        patterns:
+          - "stylelint*"
       vitest-packages:
         patterns:
           - "vitest*"
