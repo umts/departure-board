@@ -5,6 +5,10 @@ updates:
     schedule:
       interval: daily
     groups:
+      react-packages:
+        patterns:
+          - "react"
+          - "react-dom"
       vitest-packages:
         patterns:
           - "vitest*"
