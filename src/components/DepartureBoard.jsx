@@ -2,14 +2,15 @@ import { useEffect, useState } from 'react'
 import { format, formatDistanceToNow } from 'date-fns'
 import TimeFormatterContext from '../contexts/DepartureTimeFormatterContext.js'
 import classNames from './DepartureBoard.module.css'
+import Stop from './Stop.jsx'
 
-export default function DepartureBoard ({ children }) {
-  const [gridDimensions, setGridDimensions] = useState(optimalGridDimensions(children.length))
+export default function DepartureBoard ({ stops }) {
+  const [gridDimensions, setGridDimensions] = useState(optimalGridDimensions(stops.length))
   useEffect(() => {
-    const handleResize = () => setGridDimensions(optimalGridDimensions(children.length))
+    const handleResize = () => setGridDimensions(optimalGridDimensions(stops.length))
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [children.length])
+  }, [stops.length])
 
   const [timeFormatter, setTimeFormatter] = useState(() => absoluteTime)
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function DepartureBoard ({ children }) {
       }}
     >
       <TimeFormatterContext value={timeFormatter}>
-        {children}
+        {stops.map((stop) => (<Stop key={stop.id} name={stop.name} departures={stop.departures} />))}
       </TimeFormatterContext>
     </div>
   )

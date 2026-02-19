@@ -1,6 +1,5 @@
 import { useGtfsSchedule, useGtfsRealtime, useFetchResolver } from 'gtfs-react-hooks'
 import DepartureBoard from './components/DepartureBoard.jsx'
-import Stop from './components/Stop.jsx'
 import useConfig from './hooks/useConfig.js'
 import departuresFromGtfs from './utils/departuresFromGtfs.js'
 
@@ -17,13 +16,7 @@ export default function App () {
 
   return (
     <>
-      {(stops === undefined)
-        ? null
-        : (
-          <DepartureBoard>
-            {stops.map((stop) => (<Stop key={stop.id} name={stop.name} departures={stop.departures} />))}
-          </DepartureBoard>
-          )}
+      {(stops === undefined) ? null : (<DepartureBoard stops={stops} />)}
     </>
   )
 }
