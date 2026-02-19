@@ -1,0 +1,7 @@
+.alert-carousel {
+  background-color: color-mix(in srgb, gray, transparent 80%);
+  border: 0.125em solid gray;
+  border-radius: 0.5em;
+  font-size: 2vh;
+  padding: 1em;
+}

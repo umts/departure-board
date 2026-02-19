@@ -4,4 +4,6 @@
   display: grid;
   grid-template-rows: 1fr min-content;
   grid-template-columns: 1fr;
+  padding: 1em;
+  gap: 1em;
 }
