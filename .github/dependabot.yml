@@ -5,6 +5,13 @@ updates:
     schedule:
       interval: daily
     groups:
+      react-packages:
+        patterns:
+          - "react"
+          - "react-dom"
+      stylelint-packages:
+        patterns:
+          - "stylelint*"
       vitest-packages:
         patterns:
           - "vitest*"
