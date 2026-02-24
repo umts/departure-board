@@ -21,7 +21,7 @@ export default function App () {
 
   return (
     <>
-      {(stops === undefined) ? null : (<DepartureBoard stops={stops} />)}
+      {(stops === undefined || alerts === undefined) ? null : (<DepartureBoard stops={stops} alerts={alerts} />)}
     </>
   )
 }
