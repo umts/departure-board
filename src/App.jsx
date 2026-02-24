@@ -17,7 +17,8 @@ export default function App () {
   const gtfsAlerts = useGtfsRealtime(alertsResolver, 30 * 1000)
 
   const stops = departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopIds, routeIds)
-  const alerts = alertsFromGtfs(gtfsAlerts, stopIds, routeIds)
+  // const alerts = alertsFromGtfs(gtfsAlerts, stopIds, routeIds)
+  const alerts = [{ header: 'Test1', description: 'Test1 Alert' }, { header: 'Test2', description: 'Test2 Alert' }]
 
   return (
     <>
