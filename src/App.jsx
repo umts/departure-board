@@ -18,7 +18,11 @@ export default function App () {
 
   const stops = departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopIds, routeIds)
   // const alerts = alertsFromGtfs(gtfsAlerts, stopIds, routeIds)
-  const alerts = [{ header: 'Test1', description: 'Test1 Alert' }, { header: 'Test2', description: 'Test2 Alert' }]
+  const alerts = [
+    { header: 'Test1', description: 'Test1 Alert', routes: [{ id: 1, name: '30' }], effect: 'Detour' },
+    { header: 'Test2', description: 'Test2 Alert',
+      routes: [{ id: 2, name: '34' }, { id: 3, name: '35' }], effect: 'Stop closed' },
+  ]
 
   return (
     <>

@@ -2,4 +2,12 @@
   background-color: rgb(from darkgray r g b / 20%);
   border: 0.125em solid darkgray;
   border-radius: 0.5em;
+  padding: 0.5em 1em;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+.alert-content {
+  flex-grow: 1;
 }

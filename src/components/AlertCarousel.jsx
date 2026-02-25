@@ -7,7 +7,7 @@ export default function AlertCarousel ({ alerts }) {
   useEffect(() => {
     const interval = setInterval(() => {
       setAlertIndex((index) => (index + 1) % alerts.length)
-    }, 1000)
+    }, 5000)
     return () => clearInterval(interval)
   }, [alerts])
 
@@ -15,9 +15,15 @@ export default function AlertCarousel ({ alerts }) {
 
   return (
     <div className={classNames['alert-carousel']}>
-      <div>{alertIndex + 1}/{alerts.length}</div>
-      <div>{currentAlert.header}</div>
-      <div>{currentAlert.description}</div>
+      <div className={classNames['alert-number']}>{alertIndex + 1}/{alerts.length}</div>
+      <div className={classNames['alert-content']}>
+        <div><strong>{currentAlert.header}</strong></div>
+        <div>{currentAlert.description}</div>
+      </div>
+      <div>
+        <div>{currentAlert.routes.map((route) => (<span key={route.id}>{route.name}</span>))}</div>
+        <div>{currentAlert.effect}</div>
+      </div>
     </div>
   )
 }
