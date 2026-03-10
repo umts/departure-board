@@ -7,7 +7,7 @@ export default function AlertCarousel ({ alerts }) {
   useEffect(() => {
     const interval = setInterval(() => {
       setAlertIndex((index) => (index + 1) % alerts.length)
-    }, 8000)
+    }, 10000)
     return () => clearInterval(interval)
   }, [alerts])
 
