@@ -19,7 +19,7 @@ export default function AlertCarousel ({ alerts }) {
         <div role='alert' className={classNames['alert-carousel']}>
           <div className={classNames['alert-number']}>
             <div><i className='fa-regular fa-bell' /></div>
-            <div>{alertIndex + 1}/{alerts.length}</div>
+            {(alerts.length > 1) && <div>{alertIndex + 1}/{alerts.length}</div>}
           </div>
           <div className={classNames['alert-content']}>
             <div className={classNames['alert-subject']}>
