@@ -22,7 +22,7 @@ export default function AlertCarousel ({ alerts }) {
             {(alerts.length > 1) && <div>{alertIndex + 1}/{alerts.length}</div>}
           </div>
           <div className={classNames['alert-content']}>
-            <strong>{currentAlert.routes.map((route) => route.name).join(', ')}: {currentAlert.header}</strong>
+            <strong>{currentAlert.entities.map((entity) => entity.name).join(', ')}: {currentAlert.header}</strong>
             <div>{currentAlert.description}</div>
           </div>
         </div>

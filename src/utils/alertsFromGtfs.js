@@ -49,21 +49,28 @@ function alertIsRelevant (alert, stopIds, routeIds) {
   ))
 }
 
-function transformToReactData (gtfsSchedule, alert) {
+function buildEntitiesHash (gtfsSchedule, alert) {
   const routesById = buildIndex(gtfsSchedule.routes, (route) => route.routeId)
-  const uniqueEntities = [...new Set(
-    alert.informedEntity.map((informedEntity) =>
-      informedEntity.agencyId || routesById[informedEntity.routeId]
-    )
-  )]
+  const agencyById = buildIndex(gtfsSchedule.agency, (agency) => agency.agencyId)
 
+  // GTFS spec has "AND" between all fields within one informedEntity object, so we'll heirarchically filter from agency to route
+  return [...new Set(
+    alert.informedEntity.map((informedEntity) => (
+      routesById[informedEntity.routeId] || agencyById[informedEntity.agencyId]
+    ))
+  )].map((entity) => (
+    {
+      id: entity.id || entity.agencyId,
+      name: entity.routeShortName || entity.agencyName
+    }
+  ))
+}
+
+function transformToReactData (gtfsSchedule, alert) {
   return {
     id: `${alert.headerText.translation[0].text}-${alert.descriptionText.translation[0].text}`,
     header: alert.headerText.translation[0].text,
     description: alert.descriptionText.translation[0].text,
-    routes: uniqueRoutes.map((route) => ({
-      id: route.id,
-      name: route.routeShortName
-    }))
+    entities: buildEntitiesHash(gtfsSchedule, alert)
   }
 }
