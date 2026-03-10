@@ -8,6 +8,14 @@
   gap: 1em;
 }
 
+.alert-number {
+  text-align: center;
+}
+
 .alert-content {
   flex-grow: 1;
+}
+
+.alert-route-and-effect {
+  text-align: right;
 }
