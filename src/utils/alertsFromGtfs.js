@@ -1,5 +1,6 @@
 import { fromUnixTime, isPast, isFuture } from 'date-fns'
 import buildIndex from './buildIndex.js'
+import uniqueValues from './uniqueValues.js'
 
 export default function alertsFromGtfs (gtfsSchedule, gtfsAlerts, stopIds, routeIds) {
   if (gtfsSchedule?.routes === undefined ||
@@ -51,14 +52,17 @@ function alertIsRelevant (alert, stopIds, routeIds) {
 
 function transformToReactData (gtfsSchedule, alert) {
   const routesById = buildIndex(gtfsSchedule.routes, (route) => route.routeId)
+  const uniqueRoutes = uniqueValues(
+    alert.informedEntity.map((informedEntity) =>
+      routesById[informedEntity.routeId]
+    )
+  )
 
   return {
     id: `${alert.headerText.translation[0].text}-${alert.descriptionText.translation[0].text}`,
     header: alert.headerText.translation[0].text,
     description: alert.descriptionText.translation[0].text,
-    routes: alert.informedEntity.map((informedEntity) =>
-      routesById[informedEntity.routeId]
-    ).map((route) => ({
+    routes: uniqueRoutes.map((route) => ({
       id: route.id,
       name: route.routeShortName
     }))
