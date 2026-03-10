@@ -1,53 +1,66 @@
 import { fromUnixTime, isPast, isFuture } from 'date-fns'
-import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
+import buildIndex from './buildIndex.js'
 
-export default function alertsFromGtfs (gtfsAlerts, stopIds, routeIds) {
-  if (gtfsAlerts === undefined) {
+export default function alertsFromGtfs (gtfsSchedule, gtfsAlerts, stopIds, routeIds) {
+  if (gtfsSchedule?.routes === undefined ||
+      gtfsSchedule?.stops === undefined ||
+      gtfsSchedule?.stopTimes === undefined ||
+      gtfsSchedule?.trips === undefined ||
+      gtfsAlerts === undefined) {
     return undefined
   }
+
+  const relevantRouteIds = routeIds || relevantRouteIdsForStopIds(gtfsSchedule, stopIds)
 
   return gtfsAlerts.entity
     .map((entity) => entity.alert)
     .filter(Boolean)
-    .filter(alertIsPresent)
-    .filter((alert) => { return alertIsRelevant(alert, stopIds, routeIds) })
-    .map(transformToReactData)
+    .filter(alertIsActive)
+    .filter((alert) => { return alertIsRelevant(alert, stopIds, relevantRouteIds) })
+    .map((alert) => transformToReactData(gtfsSchedule, alert))
+}
+
+function relevantRouteIdsForStopIds (gtfsSchedule, stopIds) {
+  const routeIds = new Set()
+  const tripsById = buildIndex(gtfsSchedule.trips, (trip) => trip.tripId)
+  gtfsSchedule.stopTimes.forEach((stopTime) => {
+    if (stopIds.includes(stopTime.stopId)) {
+      routeIds.add(tripsById[stopTime.tripId].routeId)
+    }
+  })
+  return [...routeIds]
 }
 
 // Alerts must be shown if there is no defined time period in the alert
 // The object prototype for time periods will return 0 for start/end if the alert doesn't define it
-function alertIsPresent(alert) {
+function alertIsActive (alert) {
   return (
-    alert.activePeriod == undefined ||
-    alert.activePeriod.some((time_period) => {
-      return (time_period.start == 0 || isPast(fromUnixTime(time_period.start))) &&
-             (time_period.end == 0 || isFuture(fromUnixTime(time_period.end)))
+    alert.activePeriod === undefined ||
+    alert.activePeriod.some((timePeriod) => {
+      return (timePeriod.start === 0 || isPast(fromUnixTime(timePeriod.start))) &&
+             (timePeriod.end === 0 || isFuture(fromUnixTime(timePeriod.end)))
     })
   )
 }
 
-function alertIsRelevant(alert, stopIds, routeIds) {
-  return (
-    alert.informedEntity.some((informed_entity) => {
-      if (routeIds !== undefined && informed_entity.routeId !== undefined &&
-          !routeIds.includes(informed_entity.routeId)) {
-        return false
-      }
-
-      if (stopIds !== undefined && informed_entity.stopId !== undefined &&
-          !stopIds.includes(informed_entity.stopId)) {
-        return false
-      }
-      return true
-    })
-  )
+function alertIsRelevant (alert, stopIds, routeIds) {
+  return alert.informedEntity.some((informedEntity) => (
+    stopIds.includes(informedEntity.stopId) || routeIds.includes(informedEntity.routeId)
+  ))
 }
 
-function transformToReactData(alert) {
+function transformToReactData (gtfsSchedule, alert) {
+  const routesById = buildIndex(gtfsSchedule.routes, (route) => route.routeId)
+
   return {
     id: `${alert.headerText.translation[0].text}-${alert.descriptionText.translation[0].text}`,
     header: alert.headerText.translation[0].text,
     description: alert.descriptionText.translation[0].text,
-    entity: alert.informedEntity
+    routes: alert.informedEntity.map((informedEntity) =>
+      routesById[informedEntity.routeId]
+    ).map((route) => ({
+      id: route.id,
+      name: route.routeShortName
+    }))
   }
 }

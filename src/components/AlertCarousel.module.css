@@ -16,6 +16,8 @@
   flex-grow: 1;
 }
 
-.alert-route-and-effect {
-  text-align: right;
+.alert-subject {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
 }
