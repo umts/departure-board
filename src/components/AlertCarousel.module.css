@@ -15,9 +15,3 @@
 .alert-content {
   flex-grow: 1;
 }
-
-.alert-subject {
-  display: flex;
-  justify-content: space-between;
-  gap: 1em;
-}
