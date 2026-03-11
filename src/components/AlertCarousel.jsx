@@ -27,7 +27,7 @@ export default function AlertCarousel ({ alerts }) {
               <div className={classNames['alert-routes']}>
                 {currentAlert.routes.map((route) => (
                   <span
-                    key={route.routeId}
+                    key={`${currentAlert.id}-${route.id}`}
                     style={{ textDecorationLine: 'underline', textDecorationColor: `#${route.color}` }}
                   >
                     {route.name}

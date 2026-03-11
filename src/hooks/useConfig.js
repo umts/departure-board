@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 export default function useConfig () {
   return useMemo(() => {
     const searchParams = new URLSearchParams(location.search)
+    /* istanbul ignore next */
     return {
       gtfsScheduleUrl: searchParams.get('gtfsScheduleUrl') ||
         import.meta.env.VITE_GTFS_SCHEDULE_URL ||

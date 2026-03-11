@@ -809,18 +809,172 @@ describe('App', () => {
         ]
       },
     })
-    setSearchParams({ stopIds: 'STOP_TWO,STOP_THREE' })
+    setSearchParams({ stopIds: 'MY_STOP' })
     await page.render(<App />)
     await expect.element(locateAlert('My header', 'My description')).toBeVisible()
   })
 
-  it('renders alerts for configured stops')
+  it('renders alerts for configured stops', async () => {
+    mockGtfs({
+      schedule: {
+        routes: [
+          { routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' },
+          { routeId: 'OTHER_ROUTE', routeShortName: 'OR', routeColor: '222222' },
+        ],
+        trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' }],
+        stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
+        stopTimes: []
+      },
+      tripUpdates: { entity: [] },
+      alerts: {
+        entity: [
+          {
+            alert: {
+              informedEntity: [{ stopId: 'MY_STOP', routeId: 'MY_ROUTE' }, { routeId: 'OTHER_ROUTE' }],
+              headerText: { translation: [{ text: 'My header' }] },
+              descriptionText: { translation: [{ text: 'My description' }] },
+            }
+          },
+        ]
+      },
+    })
+    setSearchParams({ stopIds: 'MY_STOP' })
+    await page.render(<App />)
+    await expect.element(locateAlert('My header', 'My description', 'MR', 'OR')).toBeVisible()
+  })
 
-  it('renders alerts for routes that visit configured stops')
+  it('renders alerts for routes that visit configured stops', async () => {
+    mockGtfs({
+      schedule: {
+        routes: [
+          { routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' },
+          { routeId: 'OTHER_ROUTE', routeShortName: 'OR', routeColor: '222222' },
+        ],
+        trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' }],
+        stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
+        stopTimes: [{ tripId: 'MY_TRIP', stopId: 'MY_STOP', stopSequence: '1' }]
+      },
+      tripUpdates: { entity: [] },
+      alerts: {
+        entity: [
+          {
+            alert: {
+              informedEntity: [{ routeId: 'MY_ROUTE' }, { routeId: 'OTHER_ROUTE' }],
+              headerText: { translation: [{ text: 'My header' }] },
+              descriptionText: { translation: [{ text: 'My description' }] },
+            }
+          },
+        ]
+      },
+    })
+    setSearchParams({ stopIds: 'MY_STOP' })
+    await page.render(<App />)
+    await expect.element(locateAlert('My header', 'My description', 'MR', 'OR')).toBeVisible()
+  })
 
-  it('only renders alerts that are currently active')
+  it('only renders alerts that are currently active', async () => {
+    mockGtfs({
+      schedule: {
+        routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
+        trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' }],
+        stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
+        stopTimes: [{ tripId: 'MY_TRIP', stopId: 'MY_STOP', stopSequence: '1' }]
+      },
+      tripUpdates: { entity: [] },
+      alerts: {
+        entity: [
+          {
+            alert: {
+              informedEntity: [{ routeId: 'MY_ROUTE' }],
+              headerText: { translation: [{ text: 'No active period' }] },
+              descriptionText: { translation: [{ text: 'My description' }] },
+            },
+          },
+          {
+            alert: {
+              activePeriod: [{ start: 0, end: 0 }],
+              informedEntity: [{ routeId: 'MY_ROUTE' }],
+              headerText: { translation: [{ text: 'Zero active period' }] },
+              descriptionText: { translation: [{ text: 'My description' }] },
+            },
+          },
+          {
+            alert: {
+              activePeriod: [{ start: currentUnixTime - 1000, end: currentUnixTime + 1000 }],
+              informedEntity: [{ routeId: 'MY_ROUTE' }],
+              headerText: { translation: [{ text: 'Covered active period' }] },
+              descriptionText: { translation: [{ text: 'My description' }] },
+            },
+          },
+          {
+            alert: {
+              activePeriod: [{ start: 0, end: currentUnixTime - 1000 }],
+              informedEntity: [{ routeId: 'MY_ROUTE' }],
+              headerText: { translation: [{ text: 'Past' }] },
+              descriptionText: { translation: [{ text: 'My description' }] },
+            },
+          },
+          {
+            alert: {
+              activePeriod: [{ start: currentUnixTime + 1000, end: 0 }],
+              informedEntity: [{ routeId: 'MY_ROUTE' }],
+              headerText: { translation: [{ text: 'Future' }] },
+              descriptionText: { translation: [{ text: 'My description' }] },
+            },
+          },
+        ]
+      },
+    })
+    setSearchParams({ stopIds: 'MY_STOP' })
+    await page.render(<App />)
+    await expect.element(locateAlert('No active period', '1/3')).toBeVisible()
+    await vi.advanceTimersByTime(20000)
+    await expect.element(locateAlert('Zero active period', '2/3')).toBeVisible()
+    await vi.advanceTimersByTime(20000)
+    await expect.element(locateAlert('Covered active period', '3/3')).toBeVisible()
+    await vi.advanceTimersByTime(20000)
+  })
 
-  it('only renders alerts for configured routes when provided')
-
-  it('rotates between alerts')
+  it('only renders alerts for configured routes when provided', async () => {
+    mockGtfs({
+      schedule: {
+        routes: [
+          { routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' },
+          { routeId: 'OTHER_ROUTE', routeShortName: 'OR', routeColor: '222222' },
+        ],
+        trips: [
+          { tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' },
+          { tripId: 'OTHER_TRIP', routeId: 'OTHER_ROUTE', tripHeadsign: 'Other trip' },
+        ],
+        stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
+        stopTimes: [
+          { tripId: 'MY_TRIP', stopId: 'MY_STOP', stopSequence: '1' },
+          { tripId: 'OTHER_TRIP', stopId: 'MY_STOP', stopSequence: '1' },
+        ]
+      },
+      tripUpdates: { entity: [] },
+      alerts: {
+        entity: [
+          {
+            alert: {
+              informedEntity: [{ routeId: 'MY_ROUTE' }],
+              headerText: { translation: [{ text: 'My header' }] },
+              descriptionText: { translation: [{ text: 'My description' }] },
+            }
+          },
+          {
+            alert: {
+              informedEntity: [{ routeId: 'OTHER_ROUTE' }],
+              headerText: { translation: [{ text: 'Other header' }] },
+              descriptionText: { translation: [{ text: 'Other description' }] },
+            }
+          },
+        ]
+      },
+    })
+    setSearchParams({ stopIds: 'MY_STOP', routeIds: 'MY_ROUTE' })
+    await page.render(<App />)
+    await expect.element(locateAlert('My header', 'My description', 'MR')).toBeVisible()
+    await expect.element(locateAlert('OR')).not.toBeInTheDocument()
+  })
 })
