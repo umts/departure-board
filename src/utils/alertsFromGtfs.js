@@ -65,7 +65,8 @@ function transformToReactData (gtfsSchedule, routesById, alert) {
     description: alert.descriptionText.translation[0].text,
     routes: routesFromAlert(routesById, alert).map((route) => ({
       id: route.id,
-      name: route.routeShortName
+      name: route.routeShortName,
+      color: route.routeColor
     }))
   }
 }

@@ -24,7 +24,16 @@ export default function AlertCarousel ({ alerts }) {
           <div className={classNames['alert-content']}>
             <div className={classNames['alert-subject']}>
               <div><strong>{currentAlert.header}</strong></div>
-              <div>{currentAlert.routes.map((route) => route.name).join(', ')}</div>
+              <div className={classNames['alert-routes']}>
+                {currentAlert.routes.map((route) => (
+                  <span
+                    key={route.routeId}
+                    style={{ textDecorationLine: 'underline', textDecorationColor: `#${route.color}` }}
+                  >
+                    {route.name}
+                  </span>
+                ))}
+              </div>
             </div>
             <div>{currentAlert.description}</div>
           </div>
