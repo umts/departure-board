@@ -11,13 +11,14 @@ export default function alertsFromGtfs (gtfsSchedule, gtfsAlerts, stopIds, route
   }
 
   const relevantRouteIds = routeIds || relevantRouteIdsForStopIds(gtfsSchedule, stopIds)
+  const routesById = buildIndex(gtfsSchedule.routes, (route) => route.routeId)
 
   return gtfsAlerts.entity
     .map((entity) => entity.alert)
     .filter(Boolean)
     .filter(alertIsActive)
     .filter((alert) => { return alertIsRelevant(alert, stopIds, relevantRouteIds) })
-    .map((alert) => transformToReactData(gtfsSchedule, alert))
+    .map((alert) => transformToReactData(gtfsSchedule, routesById, alert))
 }
 
 function relevantRouteIdsForStopIds (gtfsSchedule, stopIds) {
@@ -49,28 +50,22 @@ function alertIsRelevant (alert, stopIds, routeIds) {
   ))
 }
 
-function buildEntitiesHash (gtfsSchedule, alert) {
-  const routesById = buildIndex(gtfsSchedule.routes, (route) => route.routeId)
-  const agencyById = buildIndex(gtfsSchedule.agency, (agency) => agency.agencyId)
-
-  // GTFS spec has "AND" between all fields within one informedEntity object, so we'll heirarchically filter from agency to route
-  return [...new Set(
-    alert.informedEntity.map((informedEntity) => (
-      routesById[informedEntity.routeId] || agencyById[informedEntity.agencyId]
-    ))
-  )].map((entity) => (
-    {
-      id: entity.id || entity.agencyId,
-      name: entity.routeShortName || entity.agencyName
-    }
-  ))
+function routesFromAlert (routesById, alert) {
+  return [...new Set(alert.informedEntity.filter((informedEntity) =>
+    !!(informedEntity.routeId)
+  ).map((informedEntity) =>
+    routesById[informedEntity.routeId]
+  ))]
 }
 
-function transformToReactData (gtfsSchedule, alert) {
+function transformToReactData (gtfsSchedule, routesById, alert) {
   return {
     id: `${alert.headerText.translation[0].text}-${alert.descriptionText.translation[0].text}`,
     header: alert.headerText.translation[0].text,
     description: alert.descriptionText.translation[0].text,
-    entities: buildEntitiesHash(gtfsSchedule, alert)
+    routes: routesFromAlert(routesById, alert).map((route) => ({
+      id: route.id,
+      name: route.routeShortName
+    }))
   }
 }
