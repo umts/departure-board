@@ -12,6 +12,10 @@ updates:
       stylelint-packages:
         patterns:
           - "stylelint*"
+      vite-packages:
+        patterns:
+          - "@vitejs/*"
+          - "vite"
       vitest-packages:
         patterns:
           - "vitest*"
