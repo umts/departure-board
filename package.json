@@ -12,6 +12,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "*",
     "@fontsource/open-sans": "*",
     "@vitejs/plugin-react": "*",
     "date-fns": "*",

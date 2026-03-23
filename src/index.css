@@ -4,6 +4,7 @@
 @import url("@fontsource/open-sans/600.css");
 @import url("@fontsource/open-sans/700.css");
 @import url("@fontsource/open-sans/800.css");
+@import url("@fortawesome/fontawesome-free/css/all.css");
 
 * {
   box-sizing: border-box;

@@ -1,0 +1,28 @@
+.alert-carousel {
+  background-color: rgb(from darkgray r g b / 20%);
+  border: 0.125em solid darkgray;
+  border-radius: 0.5em;
+  padding: 0.5em 1em;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+.alert-number {
+  text-align: center;
+}
+
+.alert-content {
+  flex-grow: 1;
+}
+
+.alert-subject {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+}
+
+.alert-routes {
+  display: flex;
+  gap: 1em;
+}

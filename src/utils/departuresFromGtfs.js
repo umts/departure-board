@@ -1,5 +1,6 @@
 import { fromUnixTime, isPast } from 'date-fns'
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
+import buildIndex from './buildIndex.js'
 
 const ScheduleRelationship = GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship
 
@@ -48,17 +49,6 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
     })
   })
   return departures
-}
-
-function buildIndex (collection, computeKey, replace = () => true) {
-  const index = {}
-  collection.forEach((item) => {
-    const key = computeKey(item)
-    if (!(key in index) || replace(index[key], item)) {
-      index[key] = item
-    }
-  })
-  return index
 }
 
 function earliestStopTimeUpdates (tripUpdates, tripsById, lastStopTimesByTripId) {

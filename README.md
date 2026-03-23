@@ -17,6 +17,8 @@ Configuration options are passed using url search parameters (query strings) as 
    to the PVTA's).
 - `gtfsRealtimeTripUpdatesUrl=https://your-domain.com/path` (optional) a url that serves your agency's gtfs
    realtime trip updates (defaults to the PVTA's).
+- `gtfsRealtimeAlertsUrl=https://your-domain.com/path` (optional) a url that serves your agency's gtfs
+   realtime alerts (defaults to the PVTA's).
 
 A fully configured url to display 34/35 departures at the Integrative Learning Center would look like:
 
