@@ -5,4 +5,4 @@ on:
   pull_request:
 jobs:
   integrate:
-    uses: umts/.github/.github/workflows/integrate-vite.yml@2c9e25b258daade7055d68f6862c3488c1696f9f
+    uses: umts/.github/.github/workflows/integrate-vite.yml@main
