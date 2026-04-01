@@ -13,4 +13,4 @@ jobs:
     permissions:
       pages: write
       id-token: write
-    uses: umts/.github/.github/workflows/deploy-vite.yml@main
+    uses: umts/.github/.github/workflows/deploy-pages-vite.yml@main
