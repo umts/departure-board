@@ -43,9 +43,16 @@ export default function departuresFromGtfs (gtfsSchedule, gtfsTripUpdates, stopI
           destination: trip.tripHeadsign,
           route: route.routeShortName,
           time: update.time,
-          color: `#${route.routeColor}`
+          color: `#${route.routeColor}`,
+          routeSortOrder: route.routeSortOrder,
         }
-      }).filter(Boolean)
+      }).filter(Boolean).sort((departure1, departure2) => {
+        if (departure1.routeSortOrder === departure2.routeSortOrder) {
+          return departure1.destination.localeCompare(departure2.destination)
+        } else {
+          return departure1.routeSortOrder - departure2.routeSortOrder
+        }
+      })
     })
   })
   return departures
