@@ -977,4 +977,81 @@ describe('App', () => {
     await expect.element(locateAlert('My header', 'My description', 'MR')).toBeVisible()
     await expect.element(locateAlert('OR')).not.toBeInTheDocument()
   })
+
+  it.only('sorts departures by route sort order and headsign', async () => {
+    mockGtfs({
+      schedule: {
+        routes: [
+          { routeId: 'SECOND_ROUTE', routeShortName: 'SR', routeColor: '111111', routeSortOrder: 2 },
+          { routeId: 'FIRST_ROUTE', routeShortName: 'FR', routeColor: '111111', routeSortOrder: 1 },
+        ],
+        trips: [
+          { tripId: 'THIRD_TRIP', routeId: 'SECOND_ROUTE', tripHeadsign: 'AAA' },
+          { tripId: 'SECOND_TRIP', routeId: 'FIRST_ROUTE', tripHeadsign: 'BBB' },
+          { tripId: 'FIRST_TRIP', routeId: 'FIRST_ROUTE', tripHeadsign: 'AAA' },
+        ],
+        stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
+        stopTimes: [
+          { tripId: 'THIRD_TRIP', stopId: 'LAST_STOP', stopSequence: '2' },
+          { tripId: 'SECOND_TRIP', stopId: 'LAST_STOP', stopSequence: '2' },
+          { tripId: 'FIRST_TRIP', stopId: 'LAST_STOP', stopSequence: '2' },
+        ]
+      },
+      tripUpdates: {
+        entity: [
+          {
+            tripUpdate: {
+              trip: { tripId: 'THIRD_TRIP' },
+              stopTimeUpdate: [
+                {
+                  stopId: 'MY_STOP',
+                  scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                  departure: { time: currentUnixTime + (60 * 5) }
+                }
+              ]
+            }
+          },
+          {
+            tripUpdate: {
+              trip: { tripId: 'SECOND_TRIP' },
+              stopTimeUpdate: [
+                {
+                  stopId: 'MY_STOP',
+                  scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                  departure: { time: currentUnixTime + (60 * 10) }
+                }
+              ]
+            }
+          },
+          {
+            tripUpdate: {
+              trip: { tripId: 'FIRST_TRIP' },
+              stopTimeUpdate: [
+                {
+                  stopId: 'MY_STOP',
+                  scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                  departure: { time: currentUnixTime + (60 * 15) }
+                }
+              ]
+            }
+          },
+        ]
+      },
+      alerts: { entity: [] },
+    })
+
+    setSearchParams({ stopIds: 'MY_STOP' })
+    await page.render(<App />)
+
+    const firstDeparture = locateDeparture(page, 'FR', 'AAA')
+    const secondDeparture = locateDeparture(page, 'FR', 'BBB')
+    const thirdDeparture = locateDeparture(page, 'SR', 'AAA')
+
+    await expect.element(firstDeparture).toBeVisible()
+    await expect.element(secondDeparture).toBeVisible()
+    await expect.element(thirdDeparture).toBeVisible()
+
+    expect((await firstDeparture.element()).compareDocumentPosition((await secondDeparture.element())) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect((await secondDeparture.element()).compareDocumentPosition((await thirdDeparture.element())) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
 })
