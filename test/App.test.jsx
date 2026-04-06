@@ -978,7 +978,7 @@ describe('App', () => {
     await expect.element(locateAlert('OR')).not.toBeInTheDocument()
   })
 
-  it.only('sorts departures by route sort order and headsign', async () => {
+  it('sorts departures by route sort order and headsign', async () => {
     mockGtfs({
       schedule: {
         routes: [
@@ -1043,15 +1043,14 @@ describe('App', () => {
     setSearchParams({ stopIds: 'MY_STOP' })
     await page.render(<App />)
 
-    const firstDeparture = locateDeparture(page, 'FR', 'AAA')
-    const secondDeparture = locateDeparture(page, 'FR', 'BBB')
-    const thirdDeparture = locateDeparture(page, 'SR', 'AAA')
+    const firstDeparture = await locateDeparture(page, 'FR', 'AAA').element()
+    const secondDeparture = await locateDeparture(page, 'FR', 'BBB').element()
+    const thirdDeparture = await locateDeparture(page, 'SR', 'AAA').element()
 
-    await expect.element(firstDeparture).toBeVisible()
-    await expect.element(secondDeparture).toBeVisible()
-    await expect.element(thirdDeparture).toBeVisible()
-
-    expect((await firstDeparture.element()).compareDocumentPosition((await secondDeparture.element())) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-    expect((await secondDeparture.element()).compareDocumentPosition((await thirdDeparture.element())) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(firstDeparture).toBeVisible()
+    expect(secondDeparture).toBeVisible()
+    expect(thirdDeparture).toBeVisible()
+    expect(firstDeparture.compareDocumentPosition(secondDeparture) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(secondDeparture.compareDocumentPosition(thirdDeparture) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 })
