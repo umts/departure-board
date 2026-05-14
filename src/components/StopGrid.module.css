@@ -1,4 +1,5 @@
 .stop-grid {
+  flex-grow: 1;
   display: grid;
   gap: 1em;
 }
