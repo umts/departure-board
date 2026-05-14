@@ -5,7 +5,7 @@ import departuresFromGtfs from './utils/departuresFromGtfs.js'
 import alertsFromGtfs from './utils/alertsFromGtfs.js'
 
 export default function App () {
-  const { gtfsScheduleUrl, gtfsRealtimeTripUpdatesUrl, gtfsRealtimeAlertsUrl, stopIds, routeIds } = useConfig()
+  const { gtfsScheduleUrl, gtfsRealtimeTripUpdatesUrl, gtfsRealtimeAlertsUrl, stopIds, routeIds, migrateWarning } = useConfig()
 
   const scheduleResolver = useFetchResolver(gtfsScheduleUrl)
   const gtfsSchedule = useGtfsSchedule(scheduleResolver, 24 * 60 * 60 * 1000)
@@ -21,7 +21,7 @@ export default function App () {
 
   return (
     <>
-      {(stops === undefined || alerts === undefined) ? null : (<DepartureBoard stops={stops} alerts={alerts} />)}
+      {(stops === undefined || alerts === undefined) ? null : (<DepartureBoard migrateWarning={migrateWarning} stops={stops} alerts={alerts} />)}
     </>
   )
 }

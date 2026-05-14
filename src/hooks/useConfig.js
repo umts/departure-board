@@ -16,6 +16,7 @@ export default function useConfig () {
         DEFAULT_GTFS_REALTIME_ALERTS_URL,
       stopIds: parseArray(searchParams.get('stopIds') || import.meta.env.VITE_STOP_IDS),
       routeIds: parseArray(searchParams.get('routeIds') || import.meta.env.VITE_ROUTE_IDS),
+      migrateWarning: searchParams.get('migrateWarning'),
     }
   }, [])
 }
