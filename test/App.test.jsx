@@ -119,6 +119,39 @@ describe('App', () => {
     await expect.element(locateDeparture(stop, 'MR', 'My trip', '12:05 pm')).toBeVisible()
   })
 
+  it('displays a migrate warning when requested via url params', async () => {
+    mockGtfs({
+      schedule: {
+        routes: [{ routeId: 'MY_ROUTE', routeShortName: 'MR', routeColor: '111111' }],
+        trips: [{ tripId: 'MY_TRIP', routeId: 'MY_ROUTE', tripHeadsign: 'My trip' }],
+        stops: [{ stopId: 'MY_STOP', stopName: 'My stop' }],
+        stopTimes: [{ tripId: 'MY_TRIP', stopId: 'LAST_STOP', stopSequence: '2' }]
+      },
+      tripUpdates: {
+        entity: [
+          {
+            tripUpdate: {
+              trip: { tripId: 'MY_TRIP' },
+              stopTimeUpdate: [
+                {
+                  stopId: 'MY_STOP',
+                  scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                  departure: { time: currentUnixTime + (60 * 5) }
+                }
+              ]
+            }
+          },
+        ]
+      },
+      alerts: { entity: [] },
+    })
+
+    setSearchParams({ stopIds: 'MY_STOP', migrateWarning: '1' })
+    await page.render(<App />)
+
+    await expect.element(page.getByText('https://github.com/umts/departure-board')).toBeVisible()
+  })
+
   it('only renders departures for configured stops', async () => {
     mockGtfs({
       schedule: {
