@@ -55,7 +55,7 @@ function routesFromAlert (routesById, alert) {
     !!(informedEntity.routeId)
   ).map((informedEntity) =>
     routesById[informedEntity.routeId]
-  ))]
+  ))].filter((route) => !!(route))
 }
 
 function transformToReactData (gtfsSchedule, routesById, alert) {
