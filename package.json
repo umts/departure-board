@@ -6,7 +6,6 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "lint": "eslint .",
     "lint:css": "stylelint **/*.css **/*.module.css **/*.scss **/*.module.scss",
     "preview": "vite preview",
     "test": "vitest run"
@@ -27,10 +26,6 @@
     "@vitest/browser-playwright": "*",
     "@vitest/coverage-istanbul": "*",
     "@vitest/ui": "*",
-    "eslint": "*",
-    "eslint-plugin-react-hooks": "*",
-    "eslint-plugin-react-refresh": "*",
-    "neostandard": "*",
     "playwright": "*",
     "stylelint": "*",
     "stylelint-config-standard": "*",
