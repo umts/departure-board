@@ -14,11 +14,11 @@ Configuration options are passed using url search parameters (query strings) as 
 - `stopIds=1,2,3` (required) a list of stops that you wish to display departures for.
 - `routeIds=1,2,3` (optional) a list of routes that you wish to display departures for (defaults to all).
 - `gtfsScheduleUrl=https://your-domain.com/path` (optional) a url that serves your agency's gtfs schedule file (defaults
-   to the PVTA's).
+  to the PVTA's).
 - `gtfsRealtimeTripUpdatesUrl=https://your-domain.com/path` (optional) a url that serves your agency's gtfs
-   realtime trip updates (defaults to the PVTA's).
+  realtime trip updates (defaults to the PVTA's).
 - `gtfsRealtimeAlertsUrl=https://your-domain.com/path` (optional) a url that serves your agency's gtfs
-   realtime alerts (defaults to the PVTA's).
+  realtime alerts (defaults to the PVTA's).
 
 A fully configured url to display 34/35 departures at the Integrative Learning Center would look like:
 
