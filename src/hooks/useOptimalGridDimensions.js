@@ -20,10 +20,10 @@ function optimalGridDimensions(numItems) {
   while (gridWidth * gridHeight < numItems) {
     if (pixelWidth / pixelHeight > GRID_ITEM_ASPECT_RATIO) {
       pixelWidth = pixelWidth / 2;
-      gridWidth++;
+      gridWidth += 1;
     } else {
       pixelHeight = pixelHeight / 2;
-      gridHeight++;
+      gridHeight += 1;
     }
   }
   return [gridWidth, gridHeight];

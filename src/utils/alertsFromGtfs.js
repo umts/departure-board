@@ -18,21 +18,19 @@ export default function alertsFromGtfs(gtfsSchedule, gtfsAlerts, stopIds, routeI
   return gtfsAlerts.entity
     .map((entity) => entity.alert)
     .filter(Boolean)
-    .filter(alertIsActive)
-    .filter((alert) => {
-      return alertIsRelevant(alert, stopIds, relevantRouteIds);
-    })
+    .filter((alert) => alertIsActive(alert))
+    .filter((alert) => alertIsRelevant(alert, stopIds, relevantRouteIds))
     .map((alert) => transformToReactData(gtfsSchedule, routesById, alert));
 }
 
 function relevantRouteIdsForStopIds(gtfsSchedule, stopIds) {
   const routeIds = new Set();
   const tripsById = buildIndex(gtfsSchedule.trips, (trip) => trip.tripId);
-  gtfsSchedule.stopTimes.forEach((stopTime) => {
+  for (const stopTime of gtfsSchedule.stopTimes) {
     if (stopIds.includes(stopTime.stopId)) {
       routeIds.add(tripsById[stopTime.tripId].routeId);
     }
-  });
+  }
   return [...routeIds];
 }
 

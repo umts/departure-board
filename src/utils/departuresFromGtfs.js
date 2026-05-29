@@ -32,8 +32,49 @@ export default function departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopId
     lastStopTimesByTripId,
   );
 
+  return transformToReactData(stops, updates, routeIds, tripsById, routesById);
+}
+
+function earliestStopTimeUpdates(tripUpdates, tripsById, lastStopTimesByTripId) {
+  const stopTimeUpdates = {};
+  for (const tripUpdate of tripUpdates) {
+    const trip = tripsById[tripUpdate.trip.tripId];
+    if (trip === undefined) continue;
+
+    for (const stopTimeUpdate of tripUpdate.stopTimeUpdate) {
+      if (stopTimeUpdate.scheduleRelationship !== ScheduleRelationship.SCHEDULED) continue;
+
+      const headsign = trip.tripHeadsign;
+      const stopId = stopTimeUpdate.stopId;
+      const routeId = trip.routeId;
+      const tripId = trip.tripId;
+      const time = fromUnixTime((stopTimeUpdate.departure || stopTimeUpdate.arrival).time);
+
+      if (isPast(time)) continue;
+      if (lastStopTimesByTripId[tripId]?.stopId === stopId) continue;
+
+      stopTimeUpdates[stopId] ??= {};
+      stopTimeUpdates[stopId][routeId] ??= {};
+      const previousDeparture = stopTimeUpdates[stopId][routeId][headsign];
+      if (previousDeparture === undefined || previousDeparture.time > time) {
+        stopTimeUpdates[stopId][routeId][headsign] = { stopId, tripId, routeId, time };
+      }
+    }
+  }
   const departures = [];
-  stops.forEach((stop) => {
+  for (const byRoute of Object.values(stopTimeUpdates)) {
+    for (const byHeadsign of Object.values(byRoute)) {
+      for (const departure of Object.values(byHeadsign)) {
+        departures.push(departure);
+      }
+    }
+  }
+  return departures;
+}
+
+function transformToReactData(stops, updates, routeIds, tripsById, routesById) {
+  const departures = [];
+  for (const stop of stops) {
     departures.push({
       id: stop.stopId,
       name: stop.stopName,
@@ -42,8 +83,8 @@ export default function departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopId
         .map((update) => {
           const trip = tripsById[update.tripId];
           const route = routesById[update.routeId];
-          if (trip === undefined || route === undefined) return;
-          if (routeIds && !routeIds.includes(route.routeId)) return;
+          if (trip === undefined || route === undefined) return null;
+          if (routeIds && !routeIds.includes(route.routeId)) return null;
 
           return {
             id: `${update.routeId}-${trip.tripHeadsign}`,
@@ -59,47 +100,9 @@ export default function departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopId
           if (departure1.routeSortOrder === departure2.routeSortOrder) {
             return departure1.destination.localeCompare(departure2.destination);
           }
-            return departure1.routeSortOrder - departure2.routeSortOrder;
-          
+          return departure1.routeSortOrder - departure2.routeSortOrder;
         }),
     });
-  });
-  return departures;
-}
-
-function earliestStopTimeUpdates(tripUpdates, tripsById, lastStopTimesByTripId) {
-  const stopTimeUpdates = {};
-  tripUpdates.forEach((tripUpdate) => {
-    const trip = tripsById[tripUpdate.trip.tripId];
-    if (trip === undefined) return;
-
-    tripUpdate.stopTimeUpdate.forEach((stopTimeUpdate) => {
-      if (stopTimeUpdate.scheduleRelationship !== ScheduleRelationship.SCHEDULED) return;
-
-      const headsign = trip.tripHeadsign;
-      const stopId = stopTimeUpdate.stopId;
-      const routeId = trip.routeId;
-      const tripId = trip.tripId;
-      const time = fromUnixTime((stopTimeUpdate.departure || stopTimeUpdate.arrival).time);
-
-      if (isPast(time)) return;
-      if (lastStopTimesByTripId[tripId]?.stopId === stopId) return;
-
-      stopTimeUpdates[stopId] ??= {};
-      stopTimeUpdates[stopId][routeId] ??= {};
-      const previousDeparture = stopTimeUpdates[stopId][routeId][headsign];
-      if (previousDeparture === undefined || previousDeparture.time > time) {
-        stopTimeUpdates[stopId][routeId][headsign] = { stopId, tripId, routeId, time };
-      }
-    });
-  });
-  const departures = [];
-  Object.values(stopTimeUpdates).forEach((byRoute) => {
-    Object.values(byRoute).forEach((byHeadsign) => {
-      Object.values(byHeadsign).forEach((departure) => {
-        departures.push(departure);
-      });
-    });
-  });
+  }
   return departures;
 }

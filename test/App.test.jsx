@@ -10,7 +10,7 @@ const ScheduleRelationship =
 const gtfsReactHooksMocks = vi.hoisted(() => ({
   useGtfsSchedule: vi.fn((data) => data),
   useGtfsRealtime: vi.fn((data) => data),
-  useFetchResolver: vi.fn((resolver) => {}),
+  useFetchResolver: vi.fn(() => null),
 }));
 
 vi.mock("gtfs-react-hooks", () => ({
@@ -38,9 +38,9 @@ function clearSearchParams() {
 function setSearchParams(options) {
   const url = new URL(location);
   const search = new URLSearchParams(url.search);
-  Object.entries(options).forEach(([key, val]) => {
-    search.set(key, val);
-  });
+  for (const [key, value] of Object.entries(options)) {
+    search.set(key, value);
+  }
   url.search = search;
   history.pushState({}, "", url);
 }
@@ -50,21 +50,24 @@ function locateStop(name) {
 }
 
 function locateDeparture(parent, ...texts) {
-  return texts.reduce(
-    (locator, text) => locator.filter({ hasText: text }),
-    parent.getByRole("listitem"),
-  );
+  let locator = parent.getByRole("listitem");
+  for (const text of texts) {
+    locator = locator.filter({ hasText: text });
+  }
+  return locator;
 }
 
 function locateAlert(...texts) {
-  return texts.reduce(
-    (locator, text) => locator.filter({ hasText: text }),
-    page.getByRole("alert"),
-  );
+  let locator = page.getByRole("alert");
+  for (const text of texts) {
+    locator = locator.filter({ hasText: text });
+  }
+  return locator;
 }
 
 describe("App", () => {
-  const currentUnixTime = 43200; // 12 pm
+  // 12 pm
+  const currentUnixTime = 43200;
 
   beforeEach(() => {
     vi.useFakeTimers();

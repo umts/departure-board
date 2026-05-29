@@ -26,11 +26,7 @@ export default function App() {
   const stops = departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopIds, routeIds);
   const alerts = alertsFromGtfs(gtfsSchedule, gtfsAlerts, stopIds, routeIds);
 
-  return (
-    <>
-      {stops === undefined || alerts === undefined ? null : (
-        <DepartureBoard migrateWarning={migrateWarning} stops={stops} alerts={alerts} />
-      )}
-    </>
+  return stops === undefined || alerts === undefined ? null : (
+    <DepartureBoard migrateWarning={migrateWarning} stops={stops} alerts={alerts} />
   );
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import classNames from "./AlertCarousel.module.css";
+import AlertRoute from "./AlertRoute.jsx";
 
 export default function AlertCarousel({ alerts }) {
   const [alertIndex, setAlertIndex] = useState(0);
@@ -14,42 +15,36 @@ export default function AlertCarousel({ alerts }) {
   const currentAlert = alerts[alertIndex];
 
   return (
-    <>
-      {currentAlert && (
-        <div role="alert" className={classNames["alert-carousel"]}>
-          <div className={classNames["alert-number"]}>
+    currentAlert && (
+      <div role="alert" className={classNames["alert-carousel"]}>
+        <div className={classNames["alert-number"]}>
+          <div>
+            <i className="fa-solid fa-triangle-exclamation" />
+          </div>
+          {alerts.length > 1 && (
             <div>
-              <i className="fa-solid fa-triangle-exclamation" />
+              {alertIndex + 1}/{alerts.length}
             </div>
-            {alerts.length > 1 && (
-              <div>
-                {alertIndex + 1}/{alerts.length}
-              </div>
-            )}
-          </div>
-          <div className={classNames["alert-content"]}>
-            <div className={classNames["alert-subject"]}>
-              <div>
-                <strong>{currentAlert.header}</strong>
-              </div>
-              <div className={classNames["alert-routes"]}>
-                {currentAlert.routes.map((route) => (
-                  <span
-                    key={`${currentAlert.id}-${route.id}`}
-                    style={{
-                      textDecorationLine: "underline",
-                      textDecorationColor: `#${route.color}`,
-                    }}
-                  >
-                    {route.name}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div>{currentAlert.description}</div>
-          </div>
+          )}
         </div>
-      )}
-    </>
+        <div className={classNames["alert-content"]}>
+          <div className={classNames["alert-subject"]}>
+            <div>
+              <strong>{currentAlert.header}</strong>
+            </div>
+            <div className={classNames["alert-routes"]}>
+              {currentAlert.routes.map((route) => (
+                <AlertRoute
+                  key={`${currentAlert.id}-${route.id}`}
+                  name={route.name}
+                  color={route.color}
+                />
+              ))}
+            </div>
+          </div>
+          <div>{currentAlert.description}</div>
+        </div>
+      </div>
+    )
   );
 }
