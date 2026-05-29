@@ -13,7 +13,7 @@ export default function departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopId
     gtfsSchedule?.trips === undefined ||
     gtfsTripUpdates === undefined
   ) {
-    return undefined;
+    return;
   }
 
   const routesById = buildIndex(gtfsSchedule.routes, (route) => route.routeId);
@@ -42,8 +42,8 @@ export default function departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopId
         .map((update) => {
           const trip = tripsById[update.tripId];
           const route = routesById[update.routeId];
-          if (trip === undefined || route === undefined) return undefined;
-          if (routeIds && !routeIds.includes(route.routeId)) return undefined;
+          if (trip === undefined || route === undefined) return;
+          if (routeIds && !routeIds.includes(route.routeId)) return;
 
           return {
             id: `${update.routeId}-${trip.tripHeadsign}`,
@@ -55,12 +55,12 @@ export default function departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopId
           };
         })
         .filter(Boolean)
-        .sort((departure1, departure2) => {
+        .toSorted((departure1, departure2) => {
           if (departure1.routeSortOrder === departure2.routeSortOrder) {
             return departure1.destination.localeCompare(departure2.destination);
-          } else {
-            return departure1.routeSortOrder - departure2.routeSortOrder;
           }
+            return departure1.routeSortOrder - departure2.routeSortOrder;
+          
         }),
     });
   });

@@ -10,7 +10,7 @@ const ScheduleRelationship =
 const gtfsReactHooksMocks = vi.hoisted(() => ({
   useGtfsSchedule: vi.fn((data) => data),
   useGtfsRealtime: vi.fn((data) => data),
-  useFetchResolver: vi.fn((resolver) => undefined),
+  useFetchResolver: vi.fn((resolver) => {}),
 }));
 
 vi.mock("gtfs-react-hooks", () => ({

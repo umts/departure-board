@@ -9,7 +9,7 @@ export default function alertsFromGtfs(gtfsSchedule, gtfsAlerts, stopIds, routeI
     gtfsSchedule?.trips === undefined ||
     gtfsAlerts === undefined
   ) {
-    return undefined;
+    return;
   }
 
   const relevantRouteIds = routeIds || relevantRouteIdsForStopIds(gtfsSchedule, stopIds);
