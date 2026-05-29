@@ -6,6 +6,9 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "lint": "oxlint",
     "lint:css": "stylelint **/*.css **/*.module.css **/*.scss **/*.module.scss",
     "preview": "vite preview",
     "test": "vitest run"
@@ -26,6 +29,8 @@
     "@vitest/browser-playwright": "*",
     "@vitest/coverage-istanbul": "*",
     "@vitest/ui": "*",
+    "oxfmt": "*",
+    "oxlint": "*",
     "playwright": "*",
     "stylelint": "*",
     "stylelint-config-standard": "*",
