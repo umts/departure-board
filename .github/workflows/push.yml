@@ -7,7 +7,7 @@ on:
       - main
 jobs:
   integrate:
-    uses: umts/.github/.github/workflows/integrate-vite.yml@b0d150353b4fc582a29ef2f39e64cd7f1ef02855
+    uses: umts/.github/.github/workflows/integrate-vite.yml@main
   deploy:
     needs: integrate
     permissions:
