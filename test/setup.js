@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, vi } from 'vitest'
-import 'vitest-browser-react'
+import { afterEach, beforeEach, vi } from "vitest";
+import "vitest-browser-react";
 
 beforeEach(() => {
-  vi.useFakeTimers()
-})
+  vi.useFakeTimers();
+});
 
 afterEach(() => {
-  vi.useRealTimers()
-  vi.clearAllMocks()
-})
+  vi.useRealTimers();
+  vi.clearAllMocks();
+});
