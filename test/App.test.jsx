@@ -7,28 +7,22 @@ import App from "../src/App.jsx";
 const ScheduleRelationship =
   GtfsRealtimeBindings.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship;
 
-const gtfsReactHooksMocks = vi.hoisted(() => ({
-  useGtfsSchedule: vi.fn((data) => data),
-  useGtfsRealtime: vi.fn((data) => data),
-  useFetchResolver: vi.fn(() => null),
+const gtfsMocks = vi.hoisted(() => ({
+  useGtfsScheduleData: vi.fn(),
+  useGtfsRealtimeAlerts: vi.fn(),
 }));
 
-vi.mock("gtfs-react-hooks", () => ({
-  useGtfsSchedule: gtfsReactHooksMocks.useGtfsSchedule,
-  useGtfsRealtime: gtfsReactHooksMocks.useGtfsRealtime,
-  useFetchResolver: gtfsReactHooksMocks.useFetchResolver,
+vi.mock("../src/hooks/useGtfsScheduleData.js", () => ({
+  default: gtfsMocks.useGtfsScheduleData,
+}));
+
+vi.mock("../src/hooks/useGtfsRealtimeAlerts.js", () => ({
+  default: gtfsMocks.useGtfsRealtimeAlerts,
 }));
 
 function mockGtfs({ schedule, tripUpdates, alerts }) {
-  gtfsReactHooksMocks.useFetchResolver.mockImplementation((resolver) => {
-    if (resolver === "schedule") {
-      return schedule;
-    } else if (resolver === "trip-updates") {
-      return tripUpdates;
-    } else if (resolver === "alerts") {
-      return alerts;
-    }
-  });
+  gtfsMocks.useGtfsScheduleData.mockReturnValue(schedule);
+  gtfsMocks.useGtfsRealtimeAlerts.mockReturnValueOnce(tripUpdates).mockReturnValueOnce(alerts);
 }
 
 function clearSearchParams() {

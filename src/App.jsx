@@ -1,8 +1,9 @@
-import { useGtfsSchedule, useGtfsRealtime, useFetchResolver } from "gtfs-react-hooks";
-import DepartureBoard from "./components/DepartureBoard.jsx";
-import useConfig from "./hooks/useConfig.js";
-import departuresFromGtfs from "./utils/departuresFromGtfs.js";
 import alertsFromGtfs from "./utils/alertsFromGtfs.js";
+import DepartureBoard from "./components/DepartureBoard.jsx";
+import departuresFromGtfs from "./utils/departuresFromGtfs.js";
+import useConfig from "./hooks/useConfig.js";
+import useGtfsRealtimeAlerts from "./hooks/useGtfsRealtimeAlerts.js";
+import useGtfsScheduleData from "./hooks/useGtfsScheduleData.js";
 
 export default function App() {
   const {
@@ -14,14 +15,11 @@ export default function App() {
     migrateWarning,
   } = useConfig();
 
-  const scheduleResolver = useFetchResolver(gtfsScheduleUrl);
-  const gtfsSchedule = useGtfsSchedule(scheduleResolver, 24 * 60 * 60 * 1000);
+  const gtfsSchedule = useGtfsScheduleData(gtfsScheduleUrl);
 
-  const tripUpdatesResolver = useFetchResolver(gtfsRealtimeTripUpdatesUrl);
-  const gtfsTripUpdates = useGtfsRealtime(tripUpdatesResolver, 30 * 1000);
+  const gtfsTripUpdates = useGtfsRealtimeAlerts(gtfsRealtimeTripUpdatesUrl);
 
-  const alertsResolver = useFetchResolver(gtfsRealtimeAlertsUrl);
-  const gtfsAlerts = useGtfsRealtime(alertsResolver, 30 * 1000);
+  const gtfsAlerts = useGtfsRealtimeAlerts(gtfsRealtimeAlertsUrl);
 
   const stops = departuresFromGtfs(gtfsSchedule, gtfsTripUpdates, stopIds, routeIds);
   const alerts = alertsFromGtfs(gtfsSchedule, gtfsAlerts, stopIds, routeIds);
