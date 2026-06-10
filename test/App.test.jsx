@@ -10,6 +10,7 @@ const ScheduleRelationship =
 const gtfsMocks = vi.hoisted(() => ({
   useGtfsScheduleData: vi.fn(),
   useGtfsRealtimeAlerts: vi.fn(),
+  useGtfsTripUpdates: vi.fn(),
 }));
 
 vi.mock("../src/hooks/useGtfsScheduleData.js", () => ({
@@ -20,9 +21,14 @@ vi.mock("../src/hooks/useGtfsRealtimeAlerts.js", () => ({
   default: gtfsMocks.useGtfsRealtimeAlerts,
 }));
 
+vi.mock("../src/hooks/useGtfsTripUpdates.js", () => ({
+  default: gtfsMocks.useGtfsTripUpdates,
+}));
+
 function mockGtfs({ schedule, tripUpdates, alerts }) {
   gtfsMocks.useGtfsScheduleData.mockReturnValue(schedule);
-  gtfsMocks.useGtfsRealtimeAlerts.mockReturnValueOnce(tripUpdates).mockReturnValueOnce(alerts);
+  gtfsMocks.useGtfsTripUpdates.mockReturnValue(tripUpdates);
+  gtfsMocks.useGtfsRealtimeAlerts.mockReturnValue(alerts);
 }
 
 function clearSearchParams() {

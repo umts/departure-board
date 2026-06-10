@@ -4,6 +4,7 @@ import departuresFromGtfs from "./utils/departuresFromGtfs.js";
 import useConfig from "./hooks/useConfig.js";
 import useGtfsRealtimeAlerts from "./hooks/useGtfsRealtimeAlerts.js";
 import useGtfsScheduleData from "./hooks/useGtfsScheduleData.js";
+import useGtfsTripUpdates from "./hooks/useGtfsTripUpdates.js";
 
 export default function App() {
   const {
@@ -17,7 +18,7 @@ export default function App() {
 
   const gtfsSchedule = useGtfsScheduleData(gtfsScheduleUrl);
 
-  const gtfsTripUpdates = useGtfsRealtimeAlerts(gtfsRealtimeTripUpdatesUrl);
+  const gtfsTripUpdates = useGtfsTripUpdates(gtfsRealtimeTripUpdatesUrl);
 
   const gtfsAlerts = useGtfsRealtimeAlerts(gtfsRealtimeAlertsUrl);
 
