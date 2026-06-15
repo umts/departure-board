@@ -8,8 +8,7 @@ export default function AlertRoute({ name, color, routeTextColor }) {
   );
   return (
     <span style={style} className={classNames["alert-route"]}>
-      {" "}
-      {name}{" "}
+      {name}
     </span>
   );
 }
