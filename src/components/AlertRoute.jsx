@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
-export default function AlertRoute({ name, color }) {
+export default function AlertRoute({ name, color, routeTextColor }) {
   const style = useMemo(
-    () => ({ textDecorationLine: "underline", textDecorationColor: `#${color}` }),
+    () => ({ 'background-color': `#${color}`, color: `#${routeTextColor}` }),
     [color],
   );
   return <span style={style}> {name} </span>;

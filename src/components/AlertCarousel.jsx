@@ -38,6 +38,7 @@ export default function AlertCarousel({ alerts }) {
                   key={`${currentAlert.id}-${route.id}`}
                   name={route.name}
                   color={route.color}
+                  routeTextColor={route.routeTextColor}
                 />
               ))}
             </div>
