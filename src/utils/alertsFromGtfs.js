@@ -76,6 +76,7 @@ function transformToReactData(gtfsSchedule, routesById, alert) {
       id: route.routeId,
       name: route.routeShortName,
       color: route.routeColor,
+      routeTextColor: route.routeTextColor
     })),
   };
 }
