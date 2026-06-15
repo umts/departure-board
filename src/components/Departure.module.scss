@@ -25,6 +25,11 @@ $border-width: 0.125em;
 
 .departure-destination {
   @include item;
+
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .departure-time {
