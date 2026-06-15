@@ -6,4 +6,5 @@
   align-items: stretch;
   gap: 1em;
   padding: 1em;
+  overflow-y: auto;
 }
