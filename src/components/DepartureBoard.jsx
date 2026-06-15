@@ -16,35 +16,27 @@ export default function DepartureBoard({ migrateWarning, stops, alerts }) {
   const scrollRef = useRef(0);
   const rafRef = useRef(null);
   const runningRaf = useRef(true);
-
   useEffect(() => {
     const element = containerRef.current;
     if (!element) return;
 
     scrollRef.current = element.scrollTop || 0;
-
     let lastTime = performance.now();
-
     const speed = 15;
-
     const animate = (now) => {
       if (!runningRaf.current) return;
-    
+
       if (!lastTime) lastTime = now;
-    
+
       const delta = (now - lastTime) / 1000;
       lastTime = now;
-    
       scrollRef.current += speed * delta;
-    
       const maxScroll = element.scrollHeight - element.clientHeight;
-    
       if (scrollRef.current >= maxScroll) {
         scrollRef.current = 0;
       }
-    
+
       element.scrollTop = scrollRef.current;
-    
       rafRef.current = requestAnimationFrame(animate);
     };
     rafRef.current = requestAnimationFrame(animate);
