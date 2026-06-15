@@ -2,7 +2,6 @@ import classNames from "./MigrateWarning.module.css";
 
 export default function MigrateWarning() {
   return (
-    /* oxlint-disable react/jsx-no-literals */
     <div className={classNames["migrate-warning"]}>
       <div>
         <i className="fa-solid fa-triangle-exclamation" />
@@ -14,6 +13,5 @@ export default function MigrateWarning() {
         instructions to remove this message.
       </div>
     </div>
-    /* oxlint-enable react/jsx-no-literals */
   );
 }
