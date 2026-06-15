@@ -30,6 +30,7 @@ export default defineConfig({
     "oxc/no-optional-chaining": "off",
     "oxc/no-rest-spread-properties": "off",
     "react/react-in-jsx-scope": "off",
+    "react/jsx-no-literals": "off",
   },
   overrides: [
     {
