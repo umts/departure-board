@@ -18,6 +18,7 @@
 
 .alert-subject {
   display: flex;
+  align-items: start;
   justify-content: space-between;
   gap: 1em;
 }
