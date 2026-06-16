@@ -13,35 +13,32 @@ export default function DepartureBoard({ migrateWarning, stops, alerts }) {
   );
 
   const containerRef = useRef(null);
-  const scrollRef = useRef(0);
-  const rafRef = useRef(null);
-  const runningRaf = useRef(true);
+  const scrollPositionRef = useRef(0);
+  const requestAnimationFrameRef = useRef(null);
   useEffect(() => {
     const element = containerRef.current;
     if (!element) return;
 
-    scrollRef.current = element.scrollTop || 0;
-    let lastTime = performance.now();
+    scrollPositionRef.current = element.scrollTop || 0;
+    let lastTimestamp = performance.now();
     const speed = 15;
     const animate = (now) => {
-      if (!runningRaf.current) return;
+      if (!lastTimestamp) lastTimestamp = now;
 
-      if (!lastTime) lastTime = now;
-
-      const delta = (now - lastTime) / 1000;
-      lastTime = now;
-      scrollRef.current += speed * delta;
+      const delta = (now - lastTimestamp) / 1000;
+      lastTimestamp = now;
+      scrollPositionRef.current += speed * delta;
       const maxScroll = element.scrollHeight - element.clientHeight;
-      if (scrollRef.current >= maxScroll) {
-        scrollRef.current = 0;
+      if (scrollPositionRef.current >= maxScroll) {
+        scrollPositionRef.current = 0;
       }
 
-      element.scrollTop = scrollRef.current;
-      rafRef.current = requestAnimationFrame(animate);
+      element.scrollTop = scrollPositionRef.current;
+      requestAnimationFrameRef.current = requestAnimationFrame(animate);
     };
-    rafRef.current = requestAnimationFrame(animate);
+    requestAnimationFrameRef.current = requestAnimationFrame(animate);
 
-    return () => cancelAnimationFrame(rafRef.current);
+    return () => cancelAnimationFrame(requestAnimationFrameRef.current);
   }, []);
 
   return (
