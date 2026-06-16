@@ -1,4 +1,13 @@
 .alert-route {
-  padding: 0 0.75em;
-  border-radius: 0.5em;
+  padding: 0 0.5em;
+}
+
+.alert-route:first-of-type {
+  border-top-left-radius: 0.5em;
+  border-bottom-left-radius: 0.5em;
+}
+
+.alert-route:last-of-type {
+  border-top-right-radius: 0.5em;
+  border-bottom-right-radius: 0.5em;
 }
