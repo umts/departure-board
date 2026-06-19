@@ -2,10 +2,40 @@
   margin: 0;
 }
 
+.scroll-container {
+  overflow: hidden;
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.scroll-track {
+  display: flex;
+  flex-direction: column;
+  animation: scroll-up 10s linear infinite;
+}
+
+.scroll-track > ul:last-child {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+
 .stop-departures {
   display: grid;
   grid-template-columns: min-content 1fr min-content;
   row-gap: 0.5em;
   margin: 0;
   padding: 0;
+}
+
+@keyframes scroll-up {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-100%);
+  }
 }

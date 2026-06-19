@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useRef } from "react";
+import { useMemo } from "react";
 import AlertCarousel from "./AlertCarousel.jsx";
 import classNames from "./DepartureBoard.module.css";
 import MigrateWarning from "./MigrateWarning.jsx";
@@ -12,37 +12,8 @@ export default function DepartureBoard({ migrateWarning, stops, alerts }) {
     [width, height],
   );
 
-  const containerRef = useRef(null);
-  const scrollPositionRef = useRef(0);
-  const requestAnimationFrameRef = useRef(null);
-  useEffect(() => {
-    const element = containerRef.current;
-    if (!element) return;
-
-    scrollPositionRef.current = element.scrollTop || 0;
-    let lastTimestamp = performance.now();
-    const speed = 15;
-    const animate = (now) => {
-      if (!lastTimestamp) lastTimestamp = now;
-
-      const delta = (now - lastTimestamp) / 1000;
-      lastTimestamp = now;
-      scrollPositionRef.current += speed * delta;
-      const maxScroll = element.scrollHeight - element.clientHeight;
-      if (scrollPositionRef.current >= maxScroll) {
-        scrollPositionRef.current = 0;
-      }
-
-      element.scrollTop = scrollPositionRef.current;
-      requestAnimationFrameRef.current = requestAnimationFrame(animate);
-    };
-    requestAnimationFrameRef.current = requestAnimationFrame(animate);
-
-    return () => cancelAnimationFrame(requestAnimationFrameRef.current);
-  }, []);
-
   return (
-    <div ref={containerRef} className={classNames["departure-board"]} style={style}>
+    <div className={classNames["departure-board"]} style={style}>
       {migrateWarning && <MigrateWarning />}
       <StopGrid stops={stops} width={width} />
       <AlertCarousel alerts={alerts} />
