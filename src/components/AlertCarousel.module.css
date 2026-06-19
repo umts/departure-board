@@ -18,11 +18,12 @@
 
 .alert-subject {
   display: flex;
+  align-items: start;
   justify-content: space-between;
   gap: 1em;
 }
 
 .alert-routes {
   display: flex;
-  gap: 1em;
+  flex-wrap: nowrap;
 }
