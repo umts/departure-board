@@ -2,10 +2,50 @@
   margin: 0;
 }
 
+.scroll-container {
+  container-type: normal;
+  max-height: 65vh;
+  overflow-y: auto;
+
+  --is-overflowing: false;
+
+  animation: detect-overflow linear;
+  animation-timeline: scroll(self);
+}
+
+@container style(--is-overflowing: true) {
+  .scroll-content {
+    animation: scroll-up 10s ease-in-out infinite;
+  }
+}
+
 .stop-departures {
   display: grid;
   grid-template-columns: min-content 1fr min-content;
   row-gap: 0.5em;
   margin: 0;
   padding: 0;
+}
+
+@keyframes detect-overflow {
+  from,
+  to {
+    --is-overflowing: true;
+  }
+}
+
+@keyframes scroll-up {
+  0%,
+  30% {
+    transform: translateY(0);
+  }
+
+  50%,
+  70% {
+    transform: translateY(-50%);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
 }
