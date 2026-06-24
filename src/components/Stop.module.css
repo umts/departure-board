@@ -3,23 +3,20 @@
 }
 
 .scroll-container {
-  overflow: hidden;
-  position: relative;
-  flex: 1;
-  min-height: 0;
+  container-type: normal;
+  max-height: 65vh;
+  overflow-y: auto;
+
+  --is-overflowing: false;
+
+  animation: detect-overflow linear;
+  animation-timeline: scroll(self);
 }
 
-.scroll-track {
-  display: flex;
-  flex-direction: column;
-  animation: scroll-up 10s linear infinite;
-}
-
-.scroll-track > ul:last-child {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
+@container style(--is-overflowing: true) {
+  .scroll-content {
+    animation: scroll-up 10s ease-in-out infinite;
+  }
 }
 
 .stop-departures {
@@ -30,12 +27,25 @@
   padding: 0;
 }
 
+@keyframes detect-overflow {
+  from,
+  to {
+    --is-overflowing: true;
+  }
+}
+
 @keyframes scroll-up {
-  from {
+  0%,
+  30% {
     transform: translateY(0);
   }
 
-  to {
-    transform: translateY(-100%);
+  50%,
+  70% {
+    transform: translateY(-50%);
+  }
+
+  100% {
+    transform: translateY(0);
   }
 }
