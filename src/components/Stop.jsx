@@ -1,7 +1,7 @@
 import classNames from "./Stop.module.css";
 import Departure from "./Departure.jsx";
 import { useRef } from "react";
-import useAutoScroll from "../hooks/useAutoScroll.js"
+import useAutoScroll from "../hooks/useAutoScroll.js";
 
 export default function Stop({ name, departures }) {
   const containerRef = useRef(null);

@@ -1,5 +1,9 @@
 .stop-grid {
-  flex-grow: 1;
   display: grid;
   gap: 1em;
+  grid-template-rows: minmax(0, 1fr);
+  padding-bottom: 4em;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
 }
