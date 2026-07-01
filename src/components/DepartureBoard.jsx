@@ -4,6 +4,7 @@ import classNames from "./DepartureBoard.module.css";
 import MigrateWarning from "./MigrateWarning.jsx";
 import StopGrid from "./StopGrid.jsx";
 import useOptimalGridDimensions from "../hooks/useOptimalGridDimensions.js";
+import AlertList from "./AlertList.jsx";
 
 export default function DepartureBoard({ migrateWarning, stops, alerts, displayMode }) {
   const [width, height] = useOptimalGridDimensions(stops.length);
@@ -15,7 +16,8 @@ export default function DepartureBoard({ migrateWarning, stops, alerts, displayM
     <div className={classNames["departure-board"]} style={style}>
       {migrateWarning && <MigrateWarning />}
       {(displayMode === "all" || displayMode === "departures") && <StopGrid stops={stops} width={width} />}
-      {(displayMode === "all" || displayMode === "alerts") && <AlertCarousel alerts={alerts} />}
+      {displayMode === "all" && <AlertCarousel alerts={alerts} />}
+      {displayMode === "alerts" && <AlertList alerts={alerts} />}
     </div>
   );
 }
