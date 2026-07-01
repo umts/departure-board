@@ -14,6 +14,7 @@ export default function App() {
     stopIds,
     routeIds,
     migrateWarning,
+    displayMode,
   } = useConfig();
 
   const gtfsSchedule = useGtfsScheduleData(gtfsScheduleUrl);
@@ -26,6 +27,6 @@ export default function App() {
   const alerts = alertsFromGtfs(gtfsSchedule, gtfsAlerts, stopIds, routeIds);
 
   return stops === undefined || alerts === undefined ? null : (
-    <DepartureBoard migrateWarning={migrateWarning} stops={stops} alerts={alerts} />
+    <DepartureBoard migrateWarning={migrateWarning} stops={stops} alerts={alerts} displayMode={displayMode} />
   );
 }

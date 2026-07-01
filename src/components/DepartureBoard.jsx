@@ -5,7 +5,7 @@ import MigrateWarning from "./MigrateWarning.jsx";
 import StopGrid from "./StopGrid.jsx";
 import useOptimalGridDimensions from "../hooks/useOptimalGridDimensions.js";
 
-export default function DepartureBoard({ migrateWarning, stops, alerts }) {
+export default function DepartureBoard({ migrateWarning, stops, alerts, displayMode }) {
   const [width, height] = useOptimalGridDimensions(stops.length);
   const style = useMemo(
     () => ({ fontSize: `min(${3 / width}vw, ${3 / height}vh)` }),
@@ -14,8 +14,8 @@ export default function DepartureBoard({ migrateWarning, stops, alerts }) {
   return (
     <div className={classNames["departure-board"]} style={style}>
       {migrateWarning && <MigrateWarning />}
-      <StopGrid stops={stops} width={width} />
-      <AlertCarousel alerts={alerts} />
+      {(displayMode == "all" || displayMode == "departures") && <StopGrid stops={stops} width={width} />}
+      {(displayMode == "all" || displayMode == "alerts") && <AlertCarousel alerts={alerts} />}
     </div>
   );
 }
