@@ -14,8 +14,8 @@ export default function DepartureBoard({ migrateWarning, stops, alerts, displayM
   return (
     <div className={classNames["departure-board"]} style={style}>
       {migrateWarning && <MigrateWarning />}
-      {(displayMode == "all" || displayMode == "departures") && <StopGrid stops={stops} width={width} />}
-      {(displayMode == "all" || displayMode == "alerts") && <AlertCarousel alerts={alerts} />}
+      {(displayMode === "all" || displayMode === "departures") && <StopGrid stops={stops} width={width} />}
+      {(displayMode === "all" || displayMode === "alerts") && <AlertCarousel alerts={alerts} />}
     </div>
   );
 }
