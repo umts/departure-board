@@ -7,7 +7,7 @@ export default function AlertList({ alerts }) {
   return (
     <div>
       {alerts.map((alert) => (
-        <div role="alert" className={classNames["alert-carousel"]}>
+        <div role="alert" className={classNames["alert-carousel"]} key={alert.id}>
           <div className={classNames["alert-number"]}>
             <div>
               <i className="fa-solid fa-triangle-exclamation" />
