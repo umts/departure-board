@@ -11,6 +11,7 @@ export default function DepartureBoard({ migrateWarning, stops, alerts }) {
     () => ({ fontSize: `min(${3 / width}vw, ${3 / height}vh)` }),
     [width, height],
   );
+
   return (
     <div className={classNames["departure-board"]} style={style}>
       {migrateWarning && <MigrateWarning />}

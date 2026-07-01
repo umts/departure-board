@@ -2,6 +2,13 @@
   margin: 0;
 }
 
+.scroll-container {
+  height: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow-y: hidden;
+}
+
 .stop-departures {
   display: grid;
   grid-template-columns: min-content 1fr min-content;
