@@ -1136,4 +1136,142 @@ describe("App", () => {
       secondDeparture.compareDocumentPosition(thirdDeparture) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
   });
+
+  it("renders both departures and alerts by default", async () => {
+    mockGtfs({
+      schedule: {
+        routes: [{ routeId: "MY_ROUTE", routeShortName: "MR", routeColor: "111111" }],
+        trips: [{ tripId: "MY_TRIP", routeId: "MY_ROUTE", tripHeadsign: "My trip" }],
+        stops: [{ stopId: "MY_STOP", stopName: "My stop" }],
+        stopTimes: [{ tripId: "MY_TRIP", stopId: "LAST_STOP", stopSequence: "2" }],
+      },
+      tripUpdates: {
+        entity: [
+          {
+            tripUpdate: {
+              trip: { tripId: "MY_TRIP" },
+              stopTimeUpdate: [
+                {
+                  stopId: "MY_STOP",
+                  scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                  departure: { time: currentUnixTime + 60 * 5 },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      alerts: {
+        entity: [
+          {
+            alert: {
+              informedEntity: [{ routeId: "MY_ROUTE", stopId: 'MY_STOP' }],
+              headerText: { translation: [{ text: "My header" }] },
+              descriptionText: { translation: [{ text: "My description" }] },
+            },
+          },
+        ],
+      },
+    });
+
+    setSearchParams({ stopIds: "MY_STOP" });
+    await page.render(<App />);
+
+    const stop = locateStop("My stop");
+    const alert = locateAlert("My header", "My description")
+    await expect.element(stop).toBeVisible();
+    await expect.element(alert).toBeVisible();
+  });
+
+  it("renders only departures when specified", async () => {
+    mockGtfs({
+      schedule: {
+        routes: [{ routeId: "MY_ROUTE", routeShortName: "MR", routeColor: "111111" }],
+        trips: [{ tripId: "MY_TRIP", routeId: "MY_ROUTE", tripHeadsign: "My trip" }],
+        stops: [{ stopId: "MY_STOP", stopName: "My stop" }],
+        stopTimes: [{ tripId: "MY_TRIP", stopId: "LAST_STOP", stopSequence: "2" }],
+      },
+      tripUpdates: {
+        entity: [
+          {
+            tripUpdate: {
+              trip: { tripId: "MY_TRIP" },
+              stopTimeUpdate: [
+                {
+                  stopId: "MY_STOP",
+                  scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                  departure: { time: currentUnixTime + 60 * 5 },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      alerts: {
+        entity: [
+          {
+            alert: {
+              informedEntity: [{ routeId: "MY_ROUTE", stopId: "MY_STOP" }],
+              headerText: { translation: [{ text: "My header" }] },
+              descriptionText: { translation: [{ text: "My description" }] },
+            },
+          },
+        ],
+      },
+    });
+
+    setSearchParams({ stopIds: "MY_STOP", displayMode: "departures" });
+    await page.render(<App />);
+
+    const stop = locateStop("My stop");
+    const alert = locateAlert("My header", "My description")
+    await expect.element(stop).toBeVisible();
+    await expect.element(alert).not.toBeInTheDocument();
+  });
+
+  it("renders only alerts when specified", async () => {
+    mockGtfs({
+      schedule: {
+        routes: [{ routeId: "MY_ROUTE", routeShortName: "MR", routeColor: "111111" }],
+        trips: [{ tripId: "MY_TRIP", routeId: "MY_ROUTE", tripHeadsign: "My trip" }],
+        stops: [{ stopId: "MY_STOP", stopName: "My stop" }],
+        stopTimes: [{ tripId: "MY_TRIP", stopId: "LAST_STOP", stopSequence: "2" }],
+      },
+      tripUpdates: {
+        entity: [
+          {
+            tripUpdate: {
+              trip: { tripId: "MY_TRIP" },
+              stopTimeUpdate: [
+                {
+                  stopId: "MY_STOP",
+                  scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                  departure: { time: currentUnixTime + 60 * 5 },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      alerts: {
+        entity: [
+          {
+            alert: {
+              informedEntity: [{ routeId: "MY_ROUTE", stopId: "MY_STOP" }],
+              headerText: { translation: [{ text: "My header" }] },
+              descriptionText: { translation: [{ text: "My description" }] },
+            },
+          },
+        ],
+      },
+    });
+
+    setSearchParams({ stopIds: "MY_STOP", routeIds: "MY_ROUTE", displayMode: "alerts" });
+    await page.render(<App />);
+
+    const stop = locateStop("My stop");
+    const alert = locateAlert("My header", "My description")
+    await expect.element(stop).not.toBeInTheDocument();
+    await expect.element(alert).toBeVisible();
+  });
 });
