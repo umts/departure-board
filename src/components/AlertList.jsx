@@ -1,10 +1,17 @@
 import classNames from "./AlertCarousel.module.css";
 import AlertRoute from "./AlertRoute.jsx";
+import { useMemo } from "react";
+import useOptimalGridDimensions from "../hooks/useOptimalGridDimensions.js";
 
 export default function AlertList({ alerts }) {
+  const [width, height] = useOptimalGridDimensions(alerts.length);
+  const style = useMemo(
+    () => ({ fontSize: `min(${5 / width}vw, ${5 / height}vh)` }),
+    [width, height],
+  );
 
   return (
-    <div>
+    <div style={style}>
       <h1 className={classNames["alert-header"]}>Alerts</h1>
       <hr />
       {alerts.map((alert) => (
