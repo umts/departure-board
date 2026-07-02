@@ -3,9 +3,10 @@ import AlertRoute from "./AlertRoute.jsx";
 
 export default function AlertList({ alerts }) {
 
-
   return (
     <div>
+      <h1 className={classNames["alert-header"]}>Alerts</h1>
+      <hr />
       {alerts.map((alert) => (
         <div role="alert" className={classNames["alert-carousel"]} key={alert.id}>
           <div className={classNames["alert-number"]}>
