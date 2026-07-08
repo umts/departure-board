@@ -1136,4 +1136,103 @@ describe("App", () => {
       secondDeparture.compareDocumentPosition(thirdDeparture) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
   });
+
+  it("scrolls correctly upon overflow", async () => {
+    mockGtfs({
+      schedule: {
+        routes: [
+          {
+            routeId: "SECOND_ROUTE",
+            routeShortName: "SR",
+            routeColor: "111111",
+            routeSortOrder: 2,
+          },
+          { routeId: "FIRST_ROUTE", routeShortName: "FR", routeColor: "111111", routeSortOrder: 1 },
+        ],
+        trips: [
+          { tripId: "THIRD_TRIP", routeId: "SECOND_ROUTE", tripHeadsign: "AAA" },
+          { tripId: "SECOND_TRIP", routeId: "FIRST_ROUTE", tripHeadsign: "BBB" },
+          { tripId: "FIRST_TRIP", routeId: "FIRST_ROUTE", tripHeadsign: "AAA" },
+        ],
+        stops: [{ stopId: "MY_STOP", stopName: "My stop" }],
+        stopTimes: [
+          { tripId: "THIRD_TRIP", stopId: "LAST_STOP", stopSequence: "2" },
+          { tripId: "SECOND_TRIP", stopId: "LAST_STOP", stopSequence: "2" },
+          { tripId: "FIRST_TRIP", stopId: "LAST_STOP", stopSequence: "2" },
+        ],
+      },
+      tripUpdates: {
+        entity: [
+          {
+            tripUpdate: {
+              trip: { tripId: "THIRD_TRIP" },
+              stopTimeUpdate: [
+                {
+                  stopId: "MY_STOP",
+                  scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                  departure: { time: currentUnixTime + 60 * 5 },
+                },
+              ],
+            },
+          },
+          {
+            tripUpdate: {
+              trip: { tripId: "SECOND_TRIP" },
+              stopTimeUpdate: [
+                {
+                  stopId: "MY_STOP",
+                  scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                  departure: { time: currentUnixTime + 60 * 10 },
+                },
+              ],
+            },
+          },
+          {
+            tripUpdate: {
+              trip: { tripId: "FIRST_TRIP" },
+              stopTimeUpdate: [
+                {
+                  stopId: "MY_STOP",
+                  scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                  departure: { time: currentUnixTime + 60 * 15 },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      alerts: { entity: [] },
+    });
+
+    setSearchParams({ stopIds: "MY_STOP" });
+    await page.render(<App />);
+
+    const container = page.getByRole('region').element();
+
+    Object.defineProperty(container, "scrollHeight", {
+      configurable: true,
+      value: 1000,
+    });
+
+    Object.defineProperty(container, "clientHeight", {
+      configurable: true,
+      value: 300,
+    });
+
+    Object.defineProperty(container, "scrollTop", {
+      configurable: true,
+      writable: true,
+      value: 0,
+    });
+
+    vi.advanceTimersByTime(20000);
+
+    expect(container.scrollTop).toBe(700);
+
+    vi.advanceTimersByTime(5000);
+
+    vi.advanceTimersByTime(17000);
+
+    expect(container.scrollTop).toBe(0);
+  });
 });
