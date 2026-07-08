@@ -3,9 +3,6 @@ import { useEffect } from "react";
 export default function useAutoScroll(departures, containerRef) {
   useEffect(() => {
     const container = containerRef.current;
-
-    if (!container) return;
-
     const pauseTime = 5000;
     const scrollTime = 20;
 
