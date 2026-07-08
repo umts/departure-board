@@ -8,12 +8,12 @@
   padding: 1em;
 }
 
-.departure-board > :first-child {
+.stop-info {
   flex: 1;
   min-height: 0;
   overflow: hidden;
 }
 
-.departure-board > :last-child {
-  flex: 0 0 auto;
+.alert-info, .migration-info {
+  flex: none;
 }
