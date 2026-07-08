@@ -1,4 +1,3 @@
-import { max } from "date-fns";
 import { useEffect } from "react";
 
 export default function useAutoScroll(departures, containerRef) {
@@ -21,7 +20,7 @@ export default function useAutoScroll(departures, containerRef) {
       if (direction === 1 && container.scrollTop < maxScroll) {
         container.scrollTop += 1;
         timeout = setTimeout(scroll, scrollTime);
-      } else if (direction === -1 && container.scrollTop <= 0)  {
+      } else if (direction === -1 && container.scrollTop <= 0) {
         direction = 1;
         timeout = setTimeout(scroll, topPause);
       } else if (direction === -1 && container.scrollTop > 0) {
