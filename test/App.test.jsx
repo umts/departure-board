@@ -1207,7 +1207,7 @@ describe("App", () => {
     setSearchParams({ stopIds: "MY_STOP" });
     await page.render(<App />);
 
-    const container = page.getByRole('region').element();
+    const container = page.getByRole("region").element();
 
     Object.defineProperty(container, "scrollHeight", {
       configurable: true,

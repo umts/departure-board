@@ -10,7 +10,11 @@ export default function Stop({ name, departures }) {
     <article>
       <h1 className={classNames["stop-header"]}>{name}</h1>
       <hr />
-      <div role="region" ref={containerRef} className={classNames["scroll-container"]}>
+      <section
+        aria-labelledby="scroll-container"
+        ref={containerRef}
+        className={classNames["scroll-container"]}
+      >
         <ul className={classNames["stop-departures"]}>
           {departures.map((departure) => (
             <Departure
@@ -22,7 +26,7 @@ export default function Stop({ name, departures }) {
             />
           ))}
         </ul>
-      </div>
+      </section>
     </article>
   );
 }
