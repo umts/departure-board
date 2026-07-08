@@ -20,15 +20,15 @@ export default function useAutoScroll(departures, containerRef) {
       if (direction === 1 && container.scrollTop < maxScroll) {
         container.scrollTop += 1;
         timeout = setTimeout(scroll, scrollTime);
-      } else if (direction === -1 && container.scrollTop <= 0) {
-        direction = 1;
-        timeout = setTimeout(scroll, topPause);
-      } else if (direction === -1 && container.scrollTop > 0) {
-        container.scrollTop -= 1;
-        timeout = setTimeout(scroll, scrollTime);
       } else if (direction === 1 && container.scrollTop >= maxScroll) {
         direction = -1;
         timeout = setTimeout(scroll, bottomPause);
+      } else if (container.scrollTop > 0) {
+        container.scrollTop -= 1;
+        timeout = setTimeout(scroll, scrollTime);
+      } else {
+        direction = 1;
+        timeout = setTimeout(scroll, topPause);
       }
     };
 
