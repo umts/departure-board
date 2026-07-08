@@ -1052,7 +1052,7 @@ describe("App", () => {
     await expect.element(locateAlert("OR")).not.toBeInTheDocument();
   });
 
-  it("sorts departures by route sort order and headsign", async () => {
+  it("sorts departures by departure time", async () => {
     mockGtfs({
       schedule: {
         routes: [
@@ -1085,7 +1085,7 @@ describe("App", () => {
                 {
                   stopId: "MY_STOP",
                   scheduleRelationship: ScheduleRelationship.SCHEDULED,
-                  departure: { time: currentUnixTime + 60 * 5 },
+                  departure: { time: currentUnixTime + 60 * 15 },
                 },
               ],
             },
@@ -1109,7 +1109,7 @@ describe("App", () => {
                 {
                   stopId: "MY_STOP",
                   scheduleRelationship: ScheduleRelationship.SCHEDULED,
-                  departure: { time: currentUnixTime + 60 * 15 },
+                  departure: { time: currentUnixTime + 60 * 5 },
                 },
               ],
             },
@@ -1225,7 +1225,7 @@ describe("App", () => {
       value: 0,
     });
 
-    vi.advanceTimersByTime(20000);
+    vi.advanceTimersByTime(25000);
 
     expect(container.scrollTop).toBe(700);
 
