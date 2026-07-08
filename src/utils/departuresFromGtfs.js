@@ -97,7 +97,7 @@ function transformToReactData(stops, updates, routeIds, tripsById, routesById) {
         })
         .filter(Boolean)
         .toSorted((departure1, departure2) => {
-          if (departure1.time === departure2.time) {
+          if (departure1.time.getTime() === departure2.time.getTime()) {
             return departure1.destination.localeCompare(departure2.destination);
           }
           return departure1.time - departure2.time;

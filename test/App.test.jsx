@@ -1229,10 +1229,12 @@ describe("App", () => {
 
     expect(container.scrollTop).toBe(700);
 
-    vi.advanceTimersByTime(5000);
-
     vi.advanceTimersByTime(17000);
 
     expect(container.scrollTop).toBe(0);
+
+    vi.advanceTimersByTime(23000);
+
+    expect(container.scrollTop).toBe(700);
   });
 });
