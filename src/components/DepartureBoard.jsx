@@ -14,9 +14,13 @@ export default function DepartureBoard({ migrateWarning, stops, alerts }) {
 
   return (
     <div className={classNames["departure-board"]} style={style}>
-      {migrateWarning && <MigrateWarning className={classNames["migration-info"]} />}
-      <StopGrid className={classNames["stop-info"]} stops={stops} width={width} />
-      <AlertCarousel className={classNames["alert-info"]} alerts={alerts} />
+      <div className={classNames["migration-info"]}>{migrateWarning && <MigrateWarning />}</div>
+      <div className={classNames["stop-info"]}>
+        <StopGrid stops={stops} width={width} />
+      </div>
+      <div className={classNames["alert-info"]}>
+        <AlertCarousel alerts={alerts} />
+      </div>
     </div>
   );
 }
