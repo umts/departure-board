@@ -133,43 +133,6 @@ describe("App", () => {
     await expect.element(locateDeparture(stop, "MR", "My trip", "12:05 pm")).toBeVisible();
   });
 
-  it("renders departures for canceled trips with line-through text", async () => {
-    mockGtfs({
-      schedule: {
-        routes: [{ routeId: "MY_ROUTE", routeShortName: "MR", routeColor: "111111" }],
-        trips: [{ tripId: "MY_TRIP", routeId: "MY_ROUTE", tripHeadsign: "My trip" }],
-        stops: [{ stopId: "MY_STOP", stopName: "My stop" }],
-        stopTimes: [{ tripId: "MY_TRIP", stopId: "LAST_STOP", stopSequence: "2" }],
-      },
-      tripUpdates: {
-        entity: [
-          {
-            tripUpdate: {
-              trip: { tripId: "MY_TRIP", scheduleRelationship: TripScheduleRelationship.CANCELED },
-              stopTimeUpdate: [
-                {
-                  stopId: "MY_STOP",
-                  scheduleRelationship: ScheduleRelationship.SCHEDULED,
-                  departure: { time: currentUnixTime + 60 * 5 },
-                },
-              ],
-            },
-          },
-        ],
-      },
-      alerts: { entity: [] },
-    });
-
-    setSearchParams({ stopIds: "MY_STOP" });
-    await page.render(<App />);
-
-    const stop = locateStop("My stop");
-    const departure = locateDeparture(stop, "MR", "My trip", "12:05 pm")
-    await expect.element(stop).toBeVisible();
-    await expect.element(departure).toBeVisible();
-    await expect.element(page.getByText("My trip")).toHaveStyle('text-decoration: line-through');
-  });
-
   it("displays a migrate warning when requested via url params", async () => {
     mockGtfs({
       schedule: {
@@ -429,6 +392,43 @@ describe("App", () => {
       .element(locateDeparture(page, "MR", "My trip", "12:07 pm"))
       .not.toBeInTheDocument();
     await expect.element(locateDeparture(stopTwo, "MR", "My trip", "12:08 pm")).toBeVisible();
+  });
+
+  it("renders departures for canceled trips with line-through text", async () => {
+    mockGtfs({
+      schedule: {
+        routes: [{ routeId: "MY_ROUTE", routeShortName: "MR", routeColor: "111111" }],
+        trips: [{ tripId: "MY_TRIP", routeId: "MY_ROUTE", tripHeadsign: "My trip" }],
+        stops: [{ stopId: "MY_STOP", stopName: "My stop" }],
+        stopTimes: [{ tripId: "MY_TRIP", stopId: "LAST_STOP", stopSequence: "2" }],
+      },
+      tripUpdates: {
+        entity: [
+          {
+            tripUpdate: {
+              trip: { tripId: "MY_TRIP", scheduleRelationship: TripScheduleRelationship.CANCELED },
+              stopTimeUpdate: [
+                {
+                  stopId: "MY_STOP",
+                  scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                  departure: { time: currentUnixTime + 60 * 5 },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      alerts: { entity: [] },
+    });
+
+    setSearchParams({ stopIds: "MY_STOP" });
+    await page.render(<App />);
+
+    const stop = locateStop("My stop");
+    const departure = locateDeparture(stop, "MR", "My trip", "12:05 pm")
+    await expect.element(stop).toBeVisible();
+    await expect.element(departure).toBeVisible();
+    await expect.element(page.getByText("My trip")).toHaveStyle('text-decoration: line-through');
   });
 
   it("only renders departures in the future", async () => {
