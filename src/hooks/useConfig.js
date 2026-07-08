@@ -20,6 +20,7 @@ export default function useConfig() {
       stopIds: parseArray(searchParams.get("stopIds") || import.meta.env.VITE_STOP_IDS),
       routeIds: parseArray(searchParams.get("routeIds") || import.meta.env.VITE_ROUTE_IDS),
       migrateWarning: searchParams.get("migrateWarning"),
+      displayMode: searchParams.get('displayMode') || DEFAULT_DISPLAY_MODE,
     };
   }, []);
 }
@@ -28,6 +29,7 @@ const DEFAULT_GTFS_SCHEDULE_URL = "https://gtfs-cache.admin.umass.edu/gtfs";
 const DEFAULT_GTFS_REALTIME_TRIP_UPDATES_URL =
   "https://gtfs-cache.admin.umass.edu/gtfs-rt/trip-updates";
 const DEFAULT_GTFS_REALTIME_ALERTS_URL = "https://gtfs-cache.admin.umass.edu/gtfs-rt/alerts";
+const DEFAULT_DISPLAY_MODE = "all";
 
 function parseArray(arg) {
   return arg?.split(",")?.filter((item) => !!item);
