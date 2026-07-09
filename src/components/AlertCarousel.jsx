@@ -6,11 +6,15 @@ export default function AlertCarousel({ alerts }) {
   const [alertIndex, setAlertIndex] = useState(0);
 
   useEffect(() => {
+    if (alerts.length <= 1) {
+      return;
+    }
+
     const interval = setInterval(() => {
       setAlertIndex((index) => (index + 1) % alerts.length);
     }, 20000);
     return () => clearInterval(interval);
-  }, [alerts]);
+  }, [alerts.length]);
 
   const currentAlert = alerts[alertIndex];
 
