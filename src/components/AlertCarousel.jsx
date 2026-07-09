@@ -48,6 +48,11 @@ export default function AlertCarousel({ alerts }) {
           </div>
           <div>{currentAlert.description}</div>
         </div>
+        {alerts.length > 1 && (
+          <div className={classNames["countdown"]} key={currentAlert.id}>
+            <div className={classNames["countdown-bar"]} />
+          </div>
+        )}
       </div>
     )
   );
