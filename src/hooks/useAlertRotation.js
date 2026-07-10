@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export default function useAlertRotation(alertsLength, setAlertIndex) {
+export default function useAlertRotation(alertsLength, setAlertIndex, rotationInterval) {
   useEffect(() => {
     if (alertsLength <= 1) {
       return;
@@ -8,7 +8,7 @@ export default function useAlertRotation(alertsLength, setAlertIndex) {
 
     const interval = setInterval(() => {
       setAlertIndex((index) => (index + 1) % alertsLength);
-    }, 20000);
+    }, rotationInterval);
     return () => clearInterval(interval);
-  }, [alertsLength, setAlertIndex]);
+  }, [alertsLength, setAlertIndex, rotationInterval]);
 }

@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import useAlertRotation from "../hooks/useAlertRotation.js";
 import classNames from "./AlertCarousel.module.css";
 import AlertRoute from "./AlertRoute.jsx";
 
+const ROTATION_INTERVAL = 20000;
+
 export default function AlertCarousel({ alerts }) {
+  const animationStyle = useMemo(() => ({ animationDuration: `${ROTATION_INTERVAL}ms` }), []);
   const [alertIndex, setAlertIndex] = useState(0);
-  useAlertRotation(alerts.length, setAlertIndex);
+  useAlertRotation(alerts.length, setAlertIndex, ROTATION_INTERVAL);
 
   const currentAlert = alerts[alertIndex];
 
@@ -41,7 +44,7 @@ export default function AlertCarousel({ alerts }) {
         </div>
         {alerts.length > 1 && (
           <div className={classNames["countdown"]} key={currentAlert.id}>
-            <div className={classNames["countdown-bar"]} />
+            <div className={classNames["countdown-bar"]} style={animationStyle} />
           </div>
         )}
       </div>

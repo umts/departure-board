@@ -41,7 +41,7 @@
   }
 
   .countdown-bar {
-    animation: countdown-fill 20s linear forwards;
+    animation: countdown-fill linear forwards;
     background-color: darkgray;
     height: 100%;
     transform-origin: left center;
