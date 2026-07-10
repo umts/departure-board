@@ -1,20 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import useAlertRotation from "../hooks/useAlertRotation.js";
 import classNames from "./AlertCarousel.module.css";
 import AlertRoute from "./AlertRoute.jsx";
 
 export default function AlertCarousel({ alerts }) {
   const [alertIndex, setAlertIndex] = useState(0);
-
-  useEffect(() => {
-    if (alerts.length <= 1) {
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setAlertIndex((index) => (index + 1) % alerts.length);
-    }, 20000);
-    return () => clearInterval(interval);
-  }, [alerts.length]);
+  useAlertRotation(alerts.length, setAlertIndex);
 
   const currentAlert = alerts[alertIndex];
 
