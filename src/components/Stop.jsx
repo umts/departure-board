@@ -13,6 +13,7 @@ export default function Stop({ name, departures }) {
             route={departure.route}
             destination={departure.destination}
             time={departure.time}
+            status={departure.status}
             color={departure.color}
           />
         ))}

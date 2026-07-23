@@ -48,6 +48,7 @@ function earliestStopTimeUpdates(tripUpdates, tripsById, lastStopTimesByTripId) 
       const stopId = stopTimeUpdate.stopId;
       const routeId = trip.routeId;
       const tripId = trip.tripId;
+      const status = tripUpdate.trip.scheduleRelationship;
       const time = fromUnixTime((stopTimeUpdate.departure || stopTimeUpdate.arrival).time);
 
       if (isPast(time)) continue;
@@ -57,7 +58,7 @@ function earliestStopTimeUpdates(tripUpdates, tripsById, lastStopTimesByTripId) 
       stopTimeUpdates[stopId][routeId] ??= {};
       const previousDeparture = stopTimeUpdates[stopId][routeId][headsign];
       if (previousDeparture === undefined || previousDeparture.time > time) {
-        stopTimeUpdates[stopId][routeId][headsign] = { stopId, tripId, routeId, time };
+        stopTimeUpdates[stopId][routeId][headsign] = { stopId, tripId, routeId, time, status };
       }
     }
   }
@@ -91,6 +92,7 @@ function transformToReactData(stops, updates, routeIds, tripsById, routesById) {
             destination: trip.tripHeadsign,
             route: route.routeShortName,
             time: update.time,
+            status: update.status,
             color: `#${route.routeColor}`,
             routeSortOrder: route.routeSortOrder,
           };
