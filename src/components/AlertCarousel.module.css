@@ -6,6 +6,8 @@
   display: flex;
   align-items: center;
   gap: 1em;
+  overflow: hidden;
+  position: relative;
 }
 
 .alert-number {
@@ -26,4 +28,32 @@
 .alert-routes {
   display: flex;
   flex-wrap: nowrap;
+}
+
+@media not (prefers-reduced-motion: reduce) {
+  .countdown {
+    background-color: rgb(from darkgray r g b / 25%);
+    bottom: 0;
+    height: 0.2em;
+    left: 0;
+    position: absolute;
+    right: 0;
+  }
+
+  .countdown-bar {
+    animation: countdown-fill linear forwards;
+    background-color: darkgray;
+    height: 100%;
+    transform-origin: left center;
+  }
+}
+
+@keyframes countdown-fill {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
 }
