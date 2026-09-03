@@ -21,8 +21,12 @@ export default defineConfig({
     restriction: "error",
   },
   rules: {
-    "no-bitwise": "off",
-    "no-undefined": "off",
+    "eslint/no-bitwise": "off",
+    "eslint/no-undefined": "off",
+    "eslint/no-use-before-define": [
+      "error",
+      { functions: false, classes: true, variables: true, allowNamedExports: false },
+    ],
     "import/no-default-export": "off",
     "import/no-relative-parent-imports": "off",
     "import/no-unassigned-import": "off",
