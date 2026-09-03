@@ -4,11 +4,14 @@ import TimeFormatterContext from "../contexts/DepartureTimeFormatterContext.js";
 import Stop from "./Stop.jsx";
 import classNames from "./StopGrid.module.css";
 
+const ABSOLUTE_TIME = (time) => format(time, "h:mm aaa");
+const RELATIVE_TIME = formatDistanceToNow;
+
 export default function StopGrid({ stops, width }) {
-  const [timeFormatter, setTimeFormatter] = useState(() => absoluteTime);
+  const [timeFormatter, setTimeFormatter] = useState(() => ABSOLUTE_TIME);
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setTimeFormatter(timeFormatter === absoluteTime ? () => relativeTime : () => absoluteTime);
+      setTimeFormatter(timeFormatter === ABSOLUTE_TIME ? () => RELATIVE_TIME : () => ABSOLUTE_TIME);
     }, 5000);
     return () => clearTimeout(timeout);
   }, [timeFormatter]);
@@ -25,7 +28,3 @@ export default function StopGrid({ stops, width }) {
     </div>
   );
 }
-
-const absoluteTime = (time) => format(time, "h:mm aaa");
-
-const relativeTime = formatDistanceToNow;

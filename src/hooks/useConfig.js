@@ -1,5 +1,10 @@
 import { useMemo } from "react";
 
+const DEFAULT_GTFS_SCHEDULE_URL = "https://gtfs-cache.admin.umass.edu/gtfs";
+const DEFAULT_GTFS_REALTIME_TRIP_UPDATES_URL =
+  "https://gtfs-cache.admin.umass.edu/gtfs-rt/trip-updates";
+const DEFAULT_GTFS_REALTIME_ALERTS_URL = "https://gtfs-cache.admin.umass.edu/gtfs-rt/alerts";
+
 export default function useConfig() {
   return useMemo(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -23,11 +28,6 @@ export default function useConfig() {
     };
   }, []);
 }
-
-const DEFAULT_GTFS_SCHEDULE_URL = "https://gtfs-cache.admin.umass.edu/gtfs";
-const DEFAULT_GTFS_REALTIME_TRIP_UPDATES_URL =
-  "https://gtfs-cache.admin.umass.edu/gtfs-rt/trip-updates";
-const DEFAULT_GTFS_REALTIME_ALERTS_URL = "https://gtfs-cache.admin.umass.edu/gtfs-rt/alerts";
 
 function parseArray(arg) {
   return arg?.split(",")?.filter((item) => !!item);
