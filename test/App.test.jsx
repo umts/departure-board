@@ -1052,7 +1052,92 @@ describe("App", () => {
     await expect.element(locateAlert("OR")).not.toBeInTheDocument();
   });
 
-  it("sorts departures by route sort order and headsign", async () => {
+  it("sorts departures by departure time", async () => {
+    mockGtfs({
+      schedule: {
+        routes: [
+          {
+            routeId: "SECOND_ROUTE",
+            routeShortName: "SR",
+            routeColor: "111111",
+            routeSortOrder: 2,
+          },
+          { routeId: "FIRST_ROUTE", routeShortName: "FR", routeColor: "111111", routeSortOrder: 1 },
+        ],
+        trips: [
+          { tripId: "THIRD_TRIP", routeId: "SECOND_ROUTE", tripHeadsign: "AAA" },
+          { tripId: "SECOND_TRIP", routeId: "FIRST_ROUTE", tripHeadsign: "BBB" },
+          { tripId: "FIRST_TRIP", routeId: "FIRST_ROUTE", tripHeadsign: "AAA" },
+        ],
+        stops: [{ stopId: "MY_STOP", stopName: "My stop" }],
+        stopTimes: [
+          { tripId: "THIRD_TRIP", stopId: "LAST_STOP", stopSequence: "2" },
+          { tripId: "SECOND_TRIP", stopId: "LAST_STOP", stopSequence: "2" },
+          { tripId: "FIRST_TRIP", stopId: "LAST_STOP", stopSequence: "2" },
+        ],
+      },
+      tripUpdates: {
+        entity: [
+          {
+            tripUpdate: {
+              trip: { tripId: "THIRD_TRIP" },
+              stopTimeUpdate: [
+                {
+                  stopId: "MY_STOP",
+                  scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                  departure: { time: currentUnixTime + 60 * 15 },
+                },
+              ],
+            },
+          },
+          {
+            tripUpdate: {
+              trip: { tripId: "SECOND_TRIP" },
+              stopTimeUpdate: [
+                {
+                  stopId: "MY_STOP",
+                  scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                  departure: { time: currentUnixTime + 60 * 10 },
+                },
+              ],
+            },
+          },
+          {
+            tripUpdate: {
+              trip: { tripId: "FIRST_TRIP" },
+              stopTimeUpdate: [
+                {
+                  stopId: "MY_STOP",
+                  scheduleRelationship: ScheduleRelationship.SCHEDULED,
+                  departure: { time: currentUnixTime + 60 * 5 },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      alerts: { entity: [] },
+    });
+
+    setSearchParams({ stopIds: "MY_STOP" });
+    await page.render(<App />);
+
+    const firstDeparture = await locateDeparture(page, "FR", "AAA").element();
+    const secondDeparture = await locateDeparture(page, "FR", "BBB").element();
+    const thirdDeparture = await locateDeparture(page, "SR", "AAA").element();
+
+    expect(firstDeparture).toBeVisible();
+    expect(secondDeparture).toBeVisible();
+    expect(thirdDeparture).toBeVisible();
+    expect(
+      firstDeparture.compareDocumentPosition(secondDeparture) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      secondDeparture.compareDocumentPosition(thirdDeparture) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it("scrolls correctly upon overflow", async () => {
     mockGtfs({
       schedule: {
         routes: [
@@ -1122,18 +1207,34 @@ describe("App", () => {
     setSearchParams({ stopIds: "MY_STOP" });
     await page.render(<App />);
 
-    const firstDeparture = await locateDeparture(page, "FR", "AAA").element();
-    const secondDeparture = await locateDeparture(page, "FR", "BBB").element();
-    const thirdDeparture = await locateDeparture(page, "SR", "AAA").element();
+    const container = page.getByRole("region").element();
 
-    expect(firstDeparture).toBeVisible();
-    expect(secondDeparture).toBeVisible();
-    expect(thirdDeparture).toBeVisible();
-    expect(
-      firstDeparture.compareDocumentPosition(secondDeparture) & Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
-    expect(
-      secondDeparture.compareDocumentPosition(thirdDeparture) & Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
+    Object.defineProperty(container, "scrollHeight", {
+      configurable: true,
+      value: 1000,
+    });
+
+    Object.defineProperty(container, "clientHeight", {
+      configurable: true,
+      value: 300,
+    });
+
+    Object.defineProperty(container, "scrollTop", {
+      configurable: true,
+      writable: true,
+      value: 0,
+    });
+
+    vi.advanceTimersByTime(25000);
+
+    expect(container.scrollTop).toBe(700);
+
+    vi.advanceTimersByTime(17000);
+
+    expect(container.scrollTop).toBe(0);
+
+    vi.advanceTimersByTime(23000);
+
+    expect(container.scrollTop).toBe(700);
   });
 });

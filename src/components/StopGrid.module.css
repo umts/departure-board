@@ -1,5 +1,7 @@
 .stop-grid {
-  flex-grow: 1;
   display: grid;
   gap: 1em;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
 }
