@@ -11,11 +11,16 @@ export default function DepartureBoard({ migrateWarning, stops, alerts }) {
     () => ({ fontSize: `min(${3 / width}vw, ${3 / height}vh)` }),
     [width, height],
   );
+
   return (
     <div className={classNames["departure-board"]} style={style}>
-      {migrateWarning && <MigrateWarning />}
-      <StopGrid stops={stops} width={width} />
-      <AlertCarousel alerts={alerts} />
+      <div className={classNames["migration-info"]}>{migrateWarning && <MigrateWarning />}</div>
+      <div className={classNames["stop-info"]}>
+        <StopGrid stops={stops} width={width} />
+      </div>
+      <div className={classNames["alert-info"]}>
+        <AlertCarousel alerts={alerts} />
+      </div>
     </div>
   );
 }
