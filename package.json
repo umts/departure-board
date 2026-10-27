@@ -26,6 +26,7 @@
     "vite": "*"
   },
   "devDependencies": {
+    "@testing-library/react": "*",
     "@vitest/browser-playwright": "*",
     "@vitest/coverage-istanbul": "*",
     "@vitest/ui": "*",

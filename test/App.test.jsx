@@ -1,4 +1,5 @@
 import GtfsRealtimeBindings from "gtfs-realtime-bindings";
+import { act } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import "vitest-browser-react";
@@ -801,9 +802,13 @@ describe("App", () => {
     const stop = locateStop("My stop");
     await expect.element(stop).toBeVisible();
     await expect.element(locateDeparture(stop, "MR", "My trip", "12:05 pm")).toBeVisible();
-    await vi.advanceTimersByTime(5000);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(5000);
+    });
     await expect.element(locateDeparture(stop, "MR", "My trip", "5 minutes")).toBeVisible();
-    await vi.advanceTimersByTime(5000);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(5000);
+    });
     await expect.element(locateDeparture(stop, "MR", "My trip", "12:05 pm")).toBeVisible();
   });
 
@@ -1008,7 +1013,6 @@ describe("App", () => {
     await expect.element(locateAlert("Zero active period", "2/3")).toBeVisible();
     await vi.advanceTimersByTime(20000);
     await expect.element(locateAlert("Covered active period", "3/3")).toBeVisible();
-    await vi.advanceTimersByTime(20000);
   });
 
   it("only renders alerts for configured routes when provided", async () => {
