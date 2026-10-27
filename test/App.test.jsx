@@ -161,7 +161,9 @@ describe("App", () => {
     setSearchParams({ stopIds: "MY_STOP", migrateWarning: "1" });
     await page.render(<App />);
 
-    await expect.element(page.getByText("https://github.com/umts/departure-board")).toBeVisible();
+    await expect
+      .element(page.getByText("https://github.com/umts/departure-board", { exact: false }))
+      .toBeVisible();
   });
 
   it("only renders departures for configured stops", async () => {
