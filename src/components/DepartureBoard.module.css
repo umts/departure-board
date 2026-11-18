@@ -7,3 +7,14 @@
   gap: 1em;
   padding: 1em;
 }
+
+.stop-info {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.alert-info,
+.migration-info {
+  flex: none;
+}
