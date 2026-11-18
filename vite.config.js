@@ -3,7 +3,6 @@ import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: "",
   plugins: [react()],
   test: {
     setupFiles: ["./test/setup.js"],
